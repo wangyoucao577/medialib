@@ -49,8 +49,6 @@ func (a *AVCConfigrationBox) ParsePayload(r io.Reader) error {
 			// ignore pre_defined 2 bytes in here
 			if err := util.ReadOrError(r, make([]byte, remainBytes)); err != nil {
 				return err
-			} else {
-				parsedBytes += remainBytes
 			}
 		}
 	}
