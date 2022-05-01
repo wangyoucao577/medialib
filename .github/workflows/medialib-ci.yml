@@ -32,5 +32,5 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          args: --out-${NO_FUTURE}format colored-line-number
+          args: -v --print-resources-usage
 
