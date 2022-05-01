@@ -10,7 +10,7 @@ const (
 var typeDescriptions = map[int]string{
 	TypeAudio:     "Audio",
 	TypeVideo:     "Video",
-	TypeSriptData: "Sript Data",
+	TypeSriptData: "Script Data",
 }
 
 // TypeDescription returns description of tag type.

@@ -3,6 +3,7 @@ package tag
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -43,6 +44,36 @@ type Header struct {
 	Timestamp int32
 
 	StreamID uint32 `json:"StreamID"` // Always 0. 24 bits
+}
+
+// MarshalJSON implements json.Marshaler.
+func (h *Header) MarshalJSON() ([]byte, error) {
+	var hj = struct {
+		Filter uint8 `json:"Filter"`
+
+		TagType            uint8  `json:"TagType"`
+		TagTypeDescription string `json:"TagTypeDescription"`
+
+		DataSize uint32 `json:"DataSize"` // 24 bits
+
+		Timestamp24bits   uint32 `json:"Timestamp24bits"`   // 24 bits
+		TimestampExtended uint8  `json:"TimestampExtended"` // 8 bits
+		Timestamp         int32
+
+		StreamID uint32 `json:"StreamID"` // Always 0. 24 bits
+	}{
+		Filter: h.Filter,
+
+		TagType:            h.TagType,
+		TagTypeDescription: TypeDescription(int(h.TagType)),
+
+		DataSize: h.DataSize,
+
+		Timestamp24bits:   h.Timestamp24bits,
+		TimestampExtended: h.TimestampExtended,
+		Timestamp:         h.Timestamp,
+	}
+	return json.Marshal(hj)
 }
 
 // Parse parses Tag Header.
