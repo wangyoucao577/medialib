@@ -2,12 +2,12 @@ package video
 
 import (
 	avcc "github.com/wangyoucao577/medialib/mp4/box/sampleentry/avcC"
-	"github.com/wangyoucao577/medialib/video/avc/nalu"
+	"github.com/wangyoucao577/medialib/video/avc/es"
 )
 
 type AVCVideoPacket struct {
 	AVCDecoderConfigurationRecord *avcc.AVCDecoderConfigurationRecord `json:"avc_config,omitempty"`
-	NALUnits                      []nalu.NALUnit                      `json:"nal_units,omitempty"`
+	LengthNALU                    []es.LengthNALU                     `json:"length_nalu,omitempty"`
 }
 
 // TagBody represents video tag payload.

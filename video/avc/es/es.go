@@ -39,6 +39,12 @@ func (e *ElementaryStream) SetLengthSize(l uint32) {
 	e.LengthSize = l
 }
 
+// SetSequenceHeaders sets SPS/PPS for following NAL units parsing.
+func (e *ElementaryStream) SetSequenceHeaders(sps *sps.SequenceParameterSetData, pps *pps.PictureParameterSet) {
+	e.sps = sps
+	e.pps = pps
+}
+
 // Parse parses bytes to AVC Elementary Stream, return parsed bytes or error.
 // It's allowed to call multiple times since data maybe splitted in storage.
 func (e *ElementaryStream) Parse(r io.Reader, size int) (uint64, error) {

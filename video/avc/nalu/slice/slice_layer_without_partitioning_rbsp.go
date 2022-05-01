@@ -17,8 +17,8 @@ type LayerWithoutPartitioningRbsp struct {
 	pps *pps.PictureParameterSet      `json:"-"`
 }
 
-// SetParameterSet sets both SPS and PPS for parsing.
-func (l *LayerWithoutPartitioningRbsp) SetParameterSet(sps *sps.SequenceParameterSetData, pps *pps.PictureParameterSet) {
+// SetSequenceHeaders sets both SPS and PPS for parsing.
+func (l *LayerWithoutPartitioningRbsp) SetSequenceHeaders(sps *sps.SequenceParameterSetData, pps *pps.PictureParameterSet) {
 	l.sps = sps
 	l.pps = pps
 }

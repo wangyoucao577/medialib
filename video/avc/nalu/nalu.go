@@ -186,12 +186,12 @@ func (n *NALUnit) prepareRBRPParser() NALUParser {
 	case TypeIDR:
 		n.IDR = append(n.IDR, slice.LayerWithoutPartitioningRbsp{})
 		newSlice := &n.IDR[len(n.IDR)-1]
-		newSlice.SetParameterSet(n.SequenceParameterSetData, n.PictureParameterSet)
+		newSlice.SetSequenceHeaders(n.SequenceParameterSetData, n.PictureParameterSet)
 		return newSlice
 	case TypeNonIDR:
 		n.NonIDR = append(n.NonIDR, slice.LayerWithoutPartitioningRbsp{})
 		newSlice := &n.NonIDR[len(n.NonIDR)-1]
-		newSlice.SetParameterSet(n.SequenceParameterSetData, n.PictureParameterSet)
+		newSlice.SetSequenceHeaders(n.SequenceParameterSetData, n.PictureParameterSet)
 		return newSlice
 
 		// TODO: others

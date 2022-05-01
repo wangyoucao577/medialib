@@ -31,7 +31,7 @@ type Header struct {
 	// Time in milliseconds at which the data in this tag applies.
 	// This value is relative to the first tag in the FLV file, which
 	// always has a timestamp of 0.
-	Timestamp24bits uint32 `json:"Timestamp"` // 24 bits
+	Timestamp24bits uint32 `json:"Timestamp24bits"` // 24 bits
 
 	// Extension of the Timestamp field to form a SI32 value.
 	// This field represents the upper 8 bits, while the previous
@@ -65,10 +65,8 @@ func (h *Header) Parse(r io.Reader) error {
 
 // Validate checks whether Header is valid or not.
 func (h Header) Validate() error {
-	if h.TagType != TypeAudio &&
-		h.TagType != TypeVideo &&
-		h.TagType != TypeSriptData {
-		return fmt.Errorf("unknown tag type %d", h.TagType)
+	if !IsTypeValid(int(h.TagType)) {
+		return fmt.Errorf("invalid tag type %d", h.TagType)
 	}
 
 	if h.DataSize == 0 {

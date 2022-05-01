@@ -52,7 +52,8 @@ func (a *AVCDecoderConfigurationRecord) LengthSize() uint32 {
 	return uint32(a.LengthSizeMinusOne) + 1
 }
 
-func (a *AVCDecoderConfigurationRecord) parse(r io.Reader) (uint64, error) {
+// Parse parses AVCDecoderConfigurationRecord.
+func (a *AVCDecoderConfigurationRecord) Parse(r io.Reader) (uint64, error) {
 
 	var parsedBytes uint64
 

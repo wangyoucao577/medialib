@@ -32,7 +32,7 @@ func (a *AVCConfigrationBox) ParsePayload(r io.Reader) error {
 	}
 
 	var parsedBytes uint64
-	if bytes, err := a.AVCConfig.parse(r); err != nil {
+	if bytes, err := a.AVCConfig.Parse(r); err != nil {
 		return err
 	} else {
 		parsedBytes += bytes

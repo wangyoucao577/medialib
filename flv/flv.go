@@ -13,6 +13,7 @@ import (
 	"github.com/wangyoucao577/medialib/flv/tag/audio"
 	"github.com/wangyoucao577/medialib/flv/tag/script"
 	"github.com/wangyoucao577/medialib/flv/tag/video"
+	avcc "github.com/wangyoucao577/medialib/mp4/box/sampleentry/avcC"
 	"github.com/wangyoucao577/medialib/util"
 )
 
@@ -31,6 +32,8 @@ func (f *FLV) Parse(r io.Reader) error {
 	if err := f.Header.Parse(r); err != nil {
 		return err
 	}
+
+	var avcConfig *avcc.AVCDecoderConfigurationRecord
 
 	tagSizeData := make([]byte, 4) // fixed 4 bytes
 	for {
@@ -52,7 +55,9 @@ func (f *FLV) Parse(r io.Reader) error {
 		if tagHeader.TagType == tag.TypeAudio {
 			t = &audio.Tag{Header: tagHeader}
 		} else if tagHeader.TagType == tag.TypeVideo {
-			t = &video.Tag{Header: tagHeader}
+			videoTag := &video.Tag{Header: tagHeader}
+			videoTag.SetAVCConfig(avcConfig)
+			t = videoTag
 		} else if tagHeader.TagType == tag.TypeSriptData {
 			t = &script.Tag{Header: tagHeader}
 		}
@@ -70,6 +75,19 @@ func (f *FLV) Parse(r io.Reader) error {
 			return err
 		}
 		f.Tags = append(f.Tags, t)
+
+		if t.GetTagHeader().TagType == tag.TypeVideo { // cache avcConfig for later slice parsing
+			videoTag, ok := t.(*video.Tag)
+			if !ok {
+				return fmt.Errorf("invalid video tag %v", videoTag)
+			}
+			if videoTag.VideoTagHeader.AVCPacketType != nil &&
+				*videoTag.VideoTagHeader.AVCPacketType == video.AVCPacketTypeSequenceHeader &&
+				videoTag.TagBody.AVCVideoPacket != nil &&
+				videoTag.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord != nil {
+				avcConfig = videoTag.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord
+			}
+		}
 	}
 }
 
