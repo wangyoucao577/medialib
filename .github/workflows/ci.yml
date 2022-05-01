@@ -1,4 +1,4 @@
-name: medialib-ci
+name: CI
 
 on:
   push:
