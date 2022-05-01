@@ -34,8 +34,9 @@ func (f *FLV) Parse(r io.Reader) error {
 	}
 
 	var avcConfig *avcc.AVCDecoderConfigurationRecord
-
 	tagSizeData := make([]byte, 4) // fixed 4 bytes
+	var lastParsedTagSize int64
+
 	for {
 		// parse previous tag size
 		if err := util.ReadOrError(r, tagSizeData); err != nil {
@@ -43,6 +44,9 @@ func (f *FLV) Parse(r io.Reader) error {
 		}
 		size := binary.BigEndian.Uint32(tagSizeData)
 		f.PreviousTagSize = append(f.PreviousTagSize, size)
+		if size != uint32(lastParsedTagSize) {
+			glog.Warningf("PreviousTagSize %d != LastParsedTagSize %d", size, lastParsedTagSize)
+		}
 
 		// parse tag header
 		tagHeader := tag.Header{}
@@ -76,6 +80,7 @@ func (f *FLV) Parse(r io.Reader) error {
 		}
 		f.Tags = append(f.Tags, t)
 
+		lastParsedTagSize = t.Size()                   // cache parsed tag size for checking
 		if t.GetTagHeader().TagType == tag.TypeVideo { // cache avcConfig for later slice parsing
 			videoTag, ok := t.(*video.Tag)
 			if !ok {

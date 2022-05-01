@@ -10,6 +10,8 @@ import (
 	"github.com/wangyoucao577/medialib/util"
 )
 
+const HeaderSize = 11 // fixed 11 bytes
+
 // Header presents FLV tag shared data.
 type Header struct {
 	// 2 bits reserved here
@@ -78,7 +80,7 @@ func (h *Header) MarshalJSON() ([]byte, error) {
 
 // Parse parses Tag Header.
 func (h *Header) Parse(r io.Reader) error {
-	data := make([]byte, 11) // fixed-size header 11 bytes
+	data := make([]byte, HeaderSize) // fixed-size header 11 bytes
 	if err := util.ReadOrError(r, data); err != nil {
 		return err
 	}

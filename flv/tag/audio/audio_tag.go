@@ -21,6 +21,11 @@ func (t *Tag) GetTagHeader() tag.Header {
 	return t.Header
 }
 
+// Size returns total bytes of the tag, equal to (HeaderSize(11bytes) + DataSize)
+func (t Tag) Size() int64 {
+	return int64(t.Header.DataSize) + tag.HeaderSize
+}
+
 // ParsePayload parses AudioTagHeader and TayBody data with preset tag.Header.
 func (t *Tag) ParsePayload(r io.Reader) error {
 	if err := t.Header.Validate(); err != nil {
