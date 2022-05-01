@@ -8,7 +8,6 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-
   build-test:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -16,12 +15,20 @@ jobs:
     - uses: actions/setup-go@v3
       with:
         go-version: 1.17
-      id: go
     - uses: actions/checkout@v3
-
     - name: Build & Test
       run: |
         go build -v ./...
         go test -v ./...
 
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
 
