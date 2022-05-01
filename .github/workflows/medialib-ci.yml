@@ -32,5 +32,5 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          args: -v --print-resources-usage
+          args: -v --print-resources-usage --enable gofmt
 
