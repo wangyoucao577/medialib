@@ -9,8 +9,6 @@ import (
 	"github.com/wangyoucao577/medialib/util/bitreader"
 )
 
-const bitsPerByte = 8
-
 // Unsigned represents unsigned Exponential-Golomb coding.
 type Unsigned struct {
 

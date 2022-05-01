@@ -141,7 +141,7 @@ func (t TypesMarshaler) CSV() ([]byte, error) {
 
 	buf := bytes.NewBuffer(nil)
 	w := csv.NewWriter(buf)
-	w.WriteAll(records)
+	err := w.WriteAll(records)
 
-	return buf.Bytes(), w.Error()
+	return buf.Bytes(), err
 }
