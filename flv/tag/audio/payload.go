@@ -3,7 +3,7 @@ package audio
 // AACAudioData reprensents AACAudioData.
 type AACAudioData struct {
 	AudioSpecificConfig []byte `json:"AudioSpecificConfig,omitempty"`
-	RawAACFrameData     []byte `json:"RawAACFrameData"`
+	RawAACFrameData     []byte `json:"RawAACFrameData,omitempty"`
 }
 
 // TagBody represents audio tag payload.
