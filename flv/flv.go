@@ -15,6 +15,8 @@ import (
 	"github.com/wangyoucao577/medialib/flv/tag/video"
 	avcc "github.com/wangyoucao577/medialib/mp4/box/sampleentry/avcC"
 	"github.com/wangyoucao577/medialib/util"
+	"github.com/wangyoucao577/medialib/video/avc/annexbes"
+	"github.com/wangyoucao577/medialib/video/avc/es"
 )
 
 // FLV represents the FLV file format.
@@ -118,4 +120,75 @@ func (f FLV) YAML() ([]byte, error) {
 // CSV formats FLV to CSV representation, which isn't supported at the moment.
 func (f FLV) CSV() ([]byte, error) {
 	return nil, fmt.Errorf("csv representation does not support yet")
+}
+
+// ExtractES extracts AVC or HEVC Elementary Stream.
+func (f *FLV) ExtractES() (*es.ElementaryStream, error) {
+
+	if len(f.Tags) == 0 {
+		return nil, fmt.Errorf("tags not found")
+	}
+
+	e := es.ElementaryStream{}
+	for _, t := range f.Tags {
+		if t.GetTagHeader().TagType != tag.TypeVideo {
+			continue
+		}
+
+		vt, ok := t.(*video.Tag)
+		if !ok {
+			return nil, fmt.Errorf("tag %#v should be video tag but cannot convert", t)
+		}
+
+		if vt.VideoTagHeader.AVCPacketType == nil || vt.TagBody == nil {
+			return nil, fmt.Errorf("tag %#v empty AVCPacketType or TagBody", t)
+		}
+		if *vt.VideoTagHeader.AVCPacketType == video.AVCPacketTypeSequenceHeader {
+			if vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord == nil ||
+				len(vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.LengthSPSNALU) == 0 ||
+				len(vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.LengthPPSNALU) == 0 {
+				return nil, fmt.Errorf("tag %#v expect avc config but empty", t)
+			}
+			e.SetLengthSize(vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.LengthSize())
+			e.SetSequenceHeaders(vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.LengthSPSNALU[0].NALUnit.SequenceParameterSetData,
+				vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.LengthPPSNALU[0].NALUnit.PictureParameterSet)
+
+			// also add sps,pps nalu since they're real NALU in flv tag
+			var spsLengthNALU, ppsLengthNALU []es.LengthNALU
+			for _, n := range vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.LengthSPSNALU {
+				spsLengthNALU = append(spsLengthNALU, es.LengthNALU{Length: uint32(n.Length), NALU: n.NALUnit})
+			}
+			for _, n := range vt.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.LengthPPSNALU {
+				ppsLengthNALU = append(ppsLengthNALU, es.LengthNALU{Length: uint32(n.Length), NALU: n.NALUnit})
+			}
+			e.LengthNALU = append(e.LengthNALU, spsLengthNALU...)
+			e.LengthNALU = append(e.LengthNALU, ppsLengthNALU...)
+
+		} else if *vt.VideoTagHeader.AVCPacketType == video.AVCPacketTypeNALU {
+			if len(vt.TagBody.AVCVideoPacket.LengthNALU) == 0 {
+				return nil, fmt.Errorf("tag %#v expect nal units but empty", t)
+			}
+			e.LengthNALU = append(e.LengthNALU, vt.TagBody.AVCVideoPacket.LengthNALU...)
+		} else {
+			glog.Warningf("unsupported AVCPacketType %d", *vt.VideoTagHeader.AVCPacketType)
+		}
+
+	}
+
+	return &e, nil
+}
+
+// ExtractAnnexBES extracts AVC or HEVC Elementary Stream with AnnexB byte format.
+func (f FLV) ExtractAnnexBES() (*annexbes.ElementaryStream, error) {
+	mp4ES, err := f.ExtractES()
+	if err != nil {
+		return nil, err
+	}
+
+	annexbES := annexbes.ElementaryStream{}
+	for i := range mp4ES.LengthNALU {
+		annexbES.NALU = append(annexbES.NALU, mp4ES.LengthNALU[i].NALU)
+	}
+
+	return &annexbES, nil
 }
