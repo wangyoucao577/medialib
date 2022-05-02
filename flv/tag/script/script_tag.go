@@ -10,7 +10,8 @@ import (
 )
 
 type Tag struct {
-	Header tag.Header `json:"TagHeader"`
+	Header  tag.Header `json:"TagHeader"`
+	TagBody *TagBody   `json:"TagBody,omitempty"`
 }
 
 // GetTagHeader returns tag header.
@@ -29,10 +30,22 @@ func (t *Tag) ParsePayload(r io.Reader) error {
 		return err
 	}
 
-	//TODO: parse payload
-	glog.Warningf("tag type %d doesn't implemented yet, ignore payload size %d", t.Header.TagType, t.Header.DataSize)
-	if err := util.ReadOrError(r, make([]byte, t.Header.DataSize)); err != nil {
+	var parsedBytes uint64
+
+	t.TagBody = &TagBody{}
+	if bytes, err := t.TagBody.parse(r); err != nil {
 		return err
+	} else {
+		parsedBytes += bytes
+	}
+
+	if parsedBytes < uint64(t.Header.DataSize) {
+		remainBytes := uint64(t.Header.DataSize) - parsedBytes
+		glog.Warningf("tag type %d(%s) still has %d bytes NOT parse",
+			t.Header.TagType, tag.TypeDescription(int(t.Header.TagType)), remainBytes)
+		if err := util.ReadOrError(r, make([]byte, remainBytes)); err != nil {
+			return err
+		}
 	}
 
 	return nil
