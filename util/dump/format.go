@@ -1,4 +1,4 @@
-package marshaler
+package dump
 
 import "fmt"
 

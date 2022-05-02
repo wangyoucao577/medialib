@@ -7,15 +7,15 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/flv"
+	"github.com/wangyoucao577/medialib/util/dump"
 	"github.com/wangyoucao577/medialib/util/exit"
-	"github.com/wangyoucao577/medialib/util/marshaler"
 )
 
 func main() {
 	flag.Parse()
 	defer glog.Flush()
 
-	format, err := marshaler.GetFormat(flags.format)
+	format, err := dump.GetFormat(flags.format)
 	if err != nil {
 		glog.Error(err)
 		exit.Fail()
@@ -34,7 +34,7 @@ func main() {
 		}
 	}
 
-	if data, err := marshaler.Marshal(h.FLV, format); err != nil {
+	if data, err := dump.Marshal(h.FLV, format); err != nil {
 		glog.Error(err)
 	} else {
 		fmt.Println(string(data))

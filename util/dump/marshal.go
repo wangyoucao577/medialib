@@ -1,5 +1,5 @@
-// Package marshaler provides marshal by various format.
-package marshaler
+// Package dump provides dump utilities by various format.
+package dump
 
 import (
 	"fmt"

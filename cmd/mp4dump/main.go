@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/mp4/box"
+	"github.com/wangyoucao577/medialib/util/dump"
 	"github.com/wangyoucao577/medialib/util/exit"
-	"github.com/wangyoucao577/medialib/util/marshaler"
 	"github.com/wangyoucao577/medialib/video/avc/nalu"
 )
 
@@ -15,7 +15,7 @@ func main() {
 	flag.Parse()
 	defer glog.Flush()
 
-	format, err := marshaler.GetFormat(flags.format)
+	format, err := dump.GetFormat(flags.format)
 	if err != nil {
 		glog.Error(err)
 		exit.Fail()
@@ -25,9 +25,9 @@ func main() {
 
 	contentFlag := getContentFlag()
 	if contentFlag == flagContentBoxTypes {
-		data, err = marshaler.Marshal(box.TypesMarshaler{}, format)
+		data, err = dump.Marshal(box.TypesMarshaler{}, format)
 	} else if contentFlag == flagContentNALUTypes {
-		data, err = marshaler.Marshal(nalu.TypesMarshaler{}, format)
+		data, err = dump.Marshal(nalu.TypesMarshaler{}, format)
 	} else { // need to parse
 
 		if len(flags.inputFilePath) == 0 {

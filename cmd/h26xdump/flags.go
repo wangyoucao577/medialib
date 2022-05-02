@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/wangyoucao577/medialib/util/marshaler"
+	"github.com/wangyoucao577/medialib/util/dump"
 )
 
 var flags struct {
@@ -20,7 +20,7 @@ Be aware that the Elementary Stream file is mandatory stored by AnnexB byte stre
 	flag.StringVar(&flags.content, "content", "es", `Contents to parse and output, available values: 
   nalu_types: NALU types(no parse)  
   es: AVC/HEVC elementary stream parsing data`)
-	flag.StringVar(&flags.format, "format", "json", fmt.Sprintf("Output format, available values:%s", marshaler.FormatsHelper()))
+	flag.StringVar(&flags.format, "format", "json", fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 }
 
 const (

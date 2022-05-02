@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/wangyoucao577/medialib/util/marshaler"
+	"github.com/wangyoucao577/medialib/util/dump"
 )
 
 var flags struct {
@@ -23,7 +23,7 @@ func init() {
   raw_es: AVC/HEVC elementary stream(mp4 video elementary stream only, no sps/pps) 
   raw_annexb_es: AVC/HEVC Elementary Stream (AnnexB byte format, video elementary stream and parameter set elementary stream) 
   boxes: MP4 boxes`)
-	flag.StringVar(&flags.format, "format", "json", fmt.Sprintf("Output format, available values:%s", marshaler.FormatsHelper()))
+	flag.StringVar(&flags.format, "format", "json", fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 }
 
 const (
