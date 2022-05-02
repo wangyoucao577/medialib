@@ -169,9 +169,7 @@ func (f *FLV) ExtractES() (*es.ElementaryStream, error) {
 				return nil, fmt.Errorf("tag %#v expect nal units but empty", t)
 			}
 			e.LengthNALU = append(e.LengthNALU, vt.TagBody.AVCVideoPacket.LengthNALU...)
-		} else {
-			glog.Warningf("unsupported AVCPacketType %d", *vt.VideoTagHeader.AVCPacketType)
-		}
+		} // video.AVCPacketTypeEOS doesn't need to handle
 
 	}
 

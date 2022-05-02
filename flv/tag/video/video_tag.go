@@ -16,7 +16,7 @@ import (
 type Tag struct {
 	Header         tag.Header `json:"TagHeader"`
 	VideoTagHeader TagHeader  `json:"VideoTagHeader"`
-	TagBody        *TagBody   `json:"VideoTagBody"`
+	TagBody        *TagBody   `json:"VideoTagBody,omitempty"`
 
 	avcConfig *avcc.AVCDecoderConfigurationRecord `json:"-"`
 }
@@ -66,11 +66,12 @@ func (t *Tag) ParsePayload(r io.Reader) error {
 		}
 		return nil
 	}
-	t.TagBody = &TagBody{AVCVideoPacket: &AVCVideoPacket{}}
 
+	var tagBody *TagBody
 	if *t.VideoTagHeader.AVCPacketType == AVCPacketTypeSequenceHeader {
-		t.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord = &avcc.AVCDecoderConfigurationRecord{}
-		if bytes, err := t.TagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.Parse(r); err != nil {
+		tagBody = &TagBody{AVCVideoPacket: &AVCVideoPacket{}}
+		tagBody.AVCVideoPacket.AVCDecoderConfigurationRecord = &avcc.AVCDecoderConfigurationRecord{}
+		if bytes, err := tagBody.AVCVideoPacket.AVCDecoderConfigurationRecord.Parse(r); err != nil {
 			return err
 		} else {
 			parsedBytes += bytes
@@ -89,11 +90,12 @@ func (t *Tag) ParsePayload(r io.Reader) error {
 		} else {
 			parsedBytes += bytes
 		}
-		t.TagBody.AVCVideoPacket.LengthNALU = videoES.LengthNALU
-	} else {
-		glog.Warningf("unhandled avc packet type %d(%s)",
-			*t.VideoTagHeader.AVCPacketType, AVCPacketTypeDescription(int(*t.VideoTagHeader.AVCPacketType)))
+		tagBody = &TagBody{AVCVideoPacket: &AVCVideoPacket{
+			LengthNALU: videoES.LengthNALU,
+		}}
 	}
+	// else // nothing to do, no payload need to parse
+	t.TagBody = tagBody
 
 	if parsedBytes < uint64(t.Header.DataSize) {
 		remainBytes := uint64(t.Header.DataSize) - parsedBytes
