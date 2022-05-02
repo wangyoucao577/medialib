@@ -51,3 +51,27 @@ func init() {
 	flag.StringVar(&flags.content, "content", dump.ContentTypeTags, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
 	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")
 }
+
+func validateFlags() error {
+	_, err := dump.GetFormat(flags.format)
+	if err != nil {
+		return err
+	}
+
+	contentType, err := getConentType()
+	if err != nil {
+		return err
+	}
+
+	if len(flags.outputFilePath) == 0 {
+		return fmt.Errorf("output should not be empty")
+	}
+
+	if contentType == dump.ContentTypeTags {
+		if len(flags.inputFilePath) == 0 {
+			return fmt.Errorf("input file is required")
+		}
+	}
+
+	return nil
+}

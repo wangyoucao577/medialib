@@ -57,3 +57,30 @@ func init() {
 	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")
 }
+
+func validateFlags() error {
+	_, err := dump.GetFormat(flags.format)
+	if err != nil {
+		return err
+	}
+
+	contentType, err := getConentType()
+	if err != nil {
+		return err
+	}
+
+	if len(flags.outputFilePath) == 0 {
+		return fmt.Errorf("output should not be empty")
+	}
+
+	if contentType == dump.ContentTypeES ||
+		contentType == dump.ContentTypeRawES ||
+		contentType == dump.ContentTypeRawAnnexBES ||
+		contentType == dump.ContentTypeBoxes {
+		if len(flags.inputFilePath) == 0 {
+			return fmt.Errorf("input file is required")
+		}
+	}
+
+	return nil
+}
