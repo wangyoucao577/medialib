@@ -3,22 +3,26 @@ package dump
 import "fmt"
 
 // Format represents marshal supported format type.
-type Format int
+type Format string
 
 // supported marshal formats
 const (
-	FormatUnkonwn = iota
-	FormatJSON
-	FormatJSONNewLines
-	FormatYAML
-	FormatCSV
+	FormatJSON         = "json"
+	FormatJSONNewLines = "json_newlines"
+	FormatYAML         = "yaml"
+	FormatCSV          = "csv"
 )
 
-var supportedFormats = map[string]Format{
-	"json":          FormatJSON,
-	"json_newlines": FormatJSONNewLines,
-	"yaml":          FormatYAML,
-	"csv":           FormatCSV,
+var supportedFormats = map[Format]struct{}{
+	FormatJSON:         {},
+	FormatJSONNewLines: {},
+	FormatYAML:         {},
+	FormatCSV:          {},
+}
+
+// String implements Stringer.
+func (f Format) String() string {
+	return string(f)
 }
 
 // FormatsHelper returns formats help information, including supported formats as well as extra notes.
@@ -29,7 +33,7 @@ func FormatsHelper() string {
 		if len(s) != 0 {
 			s += ","
 		}
-		s += k
+		s += k.String()
 	}
 	s += ". "
 	s += "\nNote that 'csv' only available for 'no parse' content."
@@ -39,9 +43,9 @@ func FormatsHelper() string {
 
 // GetFormat parses string to get Format.
 func GetFormat(s string) (Format, error) {
-	f, ok := supportedFormats[s]
+	_, ok := supportedFormats[Format(s)]
 	if !ok {
-		return FormatUnkonwn, fmt.Errorf("unknown format %s", s)
+		return "unknown", fmt.Errorf("unknown format %s", s)
 	}
-	return f, nil
+	return Format(s), nil
 }

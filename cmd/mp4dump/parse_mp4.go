@@ -10,7 +10,7 @@ import (
 	"github.com/wangyoucao577/medialib/util/exit"
 )
 
-func parseMP4(inputFile string, format dump.Format, contentType int) ([]byte, error) {
+func parseMP4(inputFile string, format dump.Format, contentType dump.ContentType) ([]byte, error) {
 
 	// parse
 	m := mp4.New(inputFile)
@@ -22,13 +22,13 @@ func parseMP4(inputFile string, format dump.Format, contentType int) ([]byte, er
 	}
 
 	// parse avc/hevc es and print
-	if contentType == flagContentES || contentType == flagContentRawES {
+	if contentType == dump.ContentTypeES || contentType == dump.ContentTypeRawES {
 		if es, err := m.Boxes.ExtractES(0); err != nil {
 			glog.Errorf("Extract ES failed, err %v", err)
 			exit.Fail()
 		} else {
 			// print AVC ES
-			if contentType == flagContentRawES {
+			if contentType == dump.ContentTypeRawES {
 				if _, err := es.Dump(os.Stdout); err != nil {
 					glog.Errorf("Dump ES failed, err %v", err)
 					exit.Fail()
@@ -41,7 +41,7 @@ func parseMP4(inputFile string, format dump.Format, contentType int) ([]byte, er
 	}
 
 	// parse avc/hevc annexb es and print
-	if contentType == flagContentRawAnnexBES {
+	if contentType == dump.ContentTypeRawAnnexBES {
 		if es, err := m.Boxes.ExtractAnnexBES(0); err != nil {
 			glog.Errorf("Extract ES failed, err %v", err)
 			exit.Fail()

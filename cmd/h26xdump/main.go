@@ -21,11 +21,15 @@ func main() {
 		glog.Error(err)
 		exit.Fail()
 	}
+	contentType, err := getConentType()
+	if err != nil {
+		glog.Error(err)
+		exit.Fail()
+	}
 
 	var data []byte
 
-	contentFlag := getContentFlag()
-	if contentFlag == flagContentNALUTypes {
+	if contentType == dump.ContentTypeNALUTypes {
 		data, err = dump.Marshal(nalu.TypesMarshaler{}, format)
 	} else { // need to parse
 

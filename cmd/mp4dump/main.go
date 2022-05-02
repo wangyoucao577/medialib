@@ -20,13 +20,16 @@ func main() {
 		glog.Error(err)
 		exit.Fail()
 	}
-
+	contentType, err := getConentType()
+	if err != nil {
+		glog.Error(err)
+		exit.Fail()
+	}
 	var data []byte
 
-	contentFlag := getContentFlag()
-	if contentFlag == flagContentBoxTypes {
+	if contentType == dump.ContentTypeBoxTypes {
 		data, err = dump.Marshal(box.TypesMarshaler{}, format)
-	} else if contentFlag == flagContentNALUTypes {
+	} else if contentType == dump.ContentTypeNALUTypes {
 		data, err = dump.Marshal(nalu.TypesMarshaler{}, format)
 	} else { // need to parse
 
@@ -35,7 +38,7 @@ func main() {
 			exit.Fail()
 		}
 
-		data, err = parseMP4(flags.inputFilePath, format, getContentFlag())
+		data, err = parseMP4(flags.inputFilePath, format, contentType)
 	}
 
 	if err != nil {

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"strings"
 
 	"github.com/wangyoucao577/medialib/util/dump"
 )
@@ -14,30 +13,35 @@ var flags struct {
 	format        string
 }
 
-func init() {
-	flag.StringVar(&flags.inputFilePath, "i", "", `Input Elementary Stream file path, such as 'x.h264' or 'x.h265'.
-Be aware that the Elementary Stream file is mandatory stored by AnnexB byte stream format.`)
-	flag.StringVar(&flags.content, "content", "es", `Contents to parse and output, available values: 
-  nalu_types: NALU types(no parse)  
-  es: AVC/HEVC elementary stream parsing data`)
-	flag.StringVar(&flags.format, "format", "json", fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
+var supportedContentTypes = []dump.ContentType{
+	dump.ContentTypeNALUTypes,
+	dump.ContentTypeES, // NOTE: put default at the end to align with `-h` shown
 }
 
-const (
-	flagContentBoxes = iota // mp4 boxes
-	flagContentES           // AVC/HEVC Elementary Stream parsing data
-
-	// no parse needed
-	flagContentNALUTypes
-)
-
-func getContentFlag() int {
-	switch strings.ToLower(flags.content) {
-	case "es":
-		return flagContentES
-
-	case "nalu_types":
-		return flagContentNALUTypes
+func supportedConentTypesHelper() string {
+	var s string
+	for _, n := range supportedContentTypes {
+		s += "\n"
+		s += n.FixedLenString()
+		s += ": "
+		s += n.Description()
 	}
-	return flagContentBoxes
+	return s
+}
+
+func getConentType() (dump.ContentType, error) {
+	for _, c := range supportedContentTypes {
+		if c == dump.ContentType(flags.content) {
+			return c, nil
+		}
+	}
+	return "", fmt.Errorf("invalid content type %s", flags.content)
+}
+
+func init() {
+
+	flag.StringVar(&flags.inputFilePath, "i", "", `Input Elementary Stream file path, such as 'x.h264' or 'x.h265'.
+Be aware that the Elementary Stream file is mandatory stored by AnnexB byte stream format.`)
+	flag.StringVar(&flags.content, "content", dump.ContentTypeES, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
+	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 }

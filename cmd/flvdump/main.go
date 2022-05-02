@@ -20,6 +20,11 @@ func main() {
 		glog.Error(err)
 		exit.Fail()
 	}
+	contentType, err := getConentType()
+	if err != nil {
+		glog.Error(err)
+		exit.Fail()
+	}
 
 	if len(flags.inputFilePath) == 0 {
 		glog.Error("Input file is required.")
@@ -34,9 +39,12 @@ func main() {
 		}
 	}
 
-	if data, err := dump.Marshal(h.FLV, format); err != nil {
-		glog.Error(err)
-	} else {
-		fmt.Println(string(data))
+	if contentType == dump.ContentTypeTags {
+		if data, err := dump.Marshal(h.FLV, format); err != nil {
+			glog.Error(err)
+		} else {
+			fmt.Println(string(data))
+		}
 	}
+
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"strings"
 
 	"github.com/wangyoucao577/medialib/util/dump"
 )
@@ -14,42 +13,39 @@ var flags struct {
 	format        string
 }
 
-func init() {
-	flag.StringVar(&flags.inputFilePath, "i", "", "Input mp4 file path.")
-	flag.StringVar(&flags.content, "content", "boxes", `Contents to parse and output, available values: 
-  box_types: supported boxes(no parse) 
-  nalu_types: NALU types(no parse)  
-  es: AVC/HEVC elementary stream parsing data 
-  raw_es: AVC/HEVC elementary stream(mp4 video elementary stream only, no sps/pps) 
-  raw_annexb_es: AVC/HEVC Elementary Stream (AnnexB byte format, video elementary stream and parameter set elementary stream) 
-  boxes: MP4 boxes`)
-	flag.StringVar(&flags.format, "format", "json", fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
+var supportedContentTypes = []dump.ContentType{
+	dump.ContentTypeBoxTypes,
+	dump.ContentTypeNALUTypes,
+
+	dump.ContentTypeES,
+	dump.ContentTypeRawES,
+	dump.ContentTypeRawAnnexBES,
+	dump.ContentTypeBoxes, // NOTE: put default at the end to align with `-h` shown
 }
 
-const (
-	flagContentBoxes       = iota // mp4 boxes
-	flagContentES                 // AVC/HEVC Elementary Stream parsing data
-	flagContentRawES              // AVC/HEVC Elementary Stream (mp4 video elementary stream only, no sps/pps)
-	flagContentRawAnnexBES        // AVC/HEVC Elementary Stream (AnnexB byte format, video elementary stream and parameter set elementary stream)
-
-	// no parse needed
-	flagContentBoxTypes
-	flagContentNALUTypes
-)
-
-func getContentFlag() int {
-	switch strings.ToLower(flags.content) {
-	case "es":
-		return flagContentES
-	case "raw_es":
-		return flagContentRawES
-	case "raw_annexb_es":
-		return flagContentRawAnnexBES
-
-	case "box_types":
-		return flagContentBoxTypes
-	case "nalu_types":
-		return flagContentNALUTypes
+func supportedConentTypesHelper() string {
+	var s string
+	for _, n := range supportedContentTypes {
+		s += "\n"
+		s += n.FixedLenString()
+		s += ": "
+		s += n.Description()
 	}
-	return flagContentBoxes
+	return s
+}
+
+func getConentType() (dump.ContentType, error) {
+	for _, c := range supportedContentTypes {
+		if c == dump.ContentType(flags.content) {
+			return c, nil
+		}
+	}
+	return "", fmt.Errorf("invalid content type %s", flags.content)
+}
+
+func init() {
+
+	flag.StringVar(&flags.inputFilePath, "i", "", `Input mp4/fmp4 file url.`)
+	flag.StringVar(&flags.content, "content", dump.ContentTypeES, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
+	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 }
