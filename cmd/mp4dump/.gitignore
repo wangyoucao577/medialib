@@ -1,5 +1,11 @@
 
-# command 
+# command and test data
 mp4dump
 *.json
+*.yaml
+*.yml
+*.csv
 *.h264
+*.mp4
+*.m4s
+*.fmp4

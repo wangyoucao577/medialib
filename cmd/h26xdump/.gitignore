@@ -1,5 +1,8 @@
 
-# command 
+# command and test data
 h26xdump
 *.json
+*.yaml
+*.yml
+*.csv
 *.h264
