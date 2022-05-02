@@ -156,9 +156,9 @@ func (n *NALUnit) Parse(r io.Reader, size int) (uint64, error) {
 	if parser != nil {
 		if _, err := parser.Parse(bytes.NewReader(n.RBSP), len(n.RBSP)); err != nil {
 			if err != slice.ErrEmptyParameterSet {
-				return parsedBytes, fmt.Errorf("parse nalu type %d rbrp failed, err %v", n.NALUnitType, err)
+				return parsedBytes, fmt.Errorf("parse nalu type %d(%s) rbrp failed, err %v", n.NALUnitType, TypeDescription(int(n.NALUnitType)), err)
 			} else {
-				glog.Warningf("parse nalu type %d rbrp failed, ignore it, err %v", n.NALUnitType, err)
+				glog.Warningf("parse nalu type %d(%s) rbrp failed, ignore it, err %v", n.NALUnitType, TypeDescription(int(n.NALUnitType)), err)
 			}
 		}
 	} else {
