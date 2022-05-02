@@ -35,5 +35,5 @@ func Marshal(m Marshaler, f Format) ([]byte, error) {
 	}
 
 	// default
-	return nil, fmt.Errorf("unknown format %d", f)
+	return nil, fmt.Errorf("unknown format %s", f)
 }

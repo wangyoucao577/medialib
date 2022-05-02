@@ -25,26 +25,34 @@ func main() {
 		glog.Error(err)
 		exit.Fail()
 	}
-	var data []byte
 
+	if flags.outputFilePath == dump.OutputStdout {
+		defer fmt.Println() // new line to avoid `%` displayed at the end in Mac shell
+	}
+
+	var data dump.Marshaler
 	if contentType == dump.ContentTypeBoxTypes {
-		data, err = dump.Marshal(box.TypesMarshaler{}, format)
+		data = box.TypesMarshaler{}
 	} else if contentType == dump.ContentTypeNALUTypes {
-		data, err = dump.Marshal(nalu.TypesMarshaler{}, format)
-	} else { // need to parse
-
-		if len(flags.inputFilePath) == 0 {
-			glog.Error("Input file is required.")
+		data = nalu.TypesMarshaler{}
+	}
+	if data != nil {
+		if err = dump.Dump(data, format, flags.outputFilePath); err != nil {
+			glog.Error(err)
 			exit.Fail()
 		}
-
-		data, err = parseMP4(flags.inputFilePath, format, contentType)
+		return
 	}
 
+	// need to parse
+	if len(flags.inputFilePath) == 0 {
+		glog.Error("Input file is required.")
+		exit.Fail()
+	}
+
+	err = parseMP4(flags.inputFilePath, format, contentType, flags.outputFilePath)
 	if err != nil {
 		glog.Error(err)
-	} else {
-		fmt.Println(string(data))
+		exit.Fail()
 	}
-
 }

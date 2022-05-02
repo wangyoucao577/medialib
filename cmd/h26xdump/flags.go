@@ -8,9 +8,10 @@ import (
 )
 
 var flags struct {
-	inputFilePath string
-	content       string // content to output
-	format        string
+	inputFilePath  string
+	outputFilePath string
+	content        string // content to output
+	format         string
 }
 
 var supportedContentTypes = []dump.ContentType{
@@ -19,10 +20,17 @@ var supportedContentTypes = []dump.ContentType{
 }
 
 func supportedConentTypesHelper() string {
+	var maxLen int
+	for _, n := range supportedContentTypes {
+		if maxLen < len(n) {
+			maxLen = len(n)
+		}
+	}
+
 	var s string
 	for _, n := range supportedContentTypes {
 		s += "\n"
-		s += n.FixedLenString()
+		s += n.FixedLenString(maxLen)
 		s += ": "
 		s += n.Description()
 	}
@@ -44,4 +52,5 @@ func init() {
 Be aware that the Elementary Stream file is mandatory stored by AnnexB byte stream format.`)
 	flag.StringVar(&flags.content, "content", dump.ContentTypeES, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
 	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
+	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")
 }

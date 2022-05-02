@@ -27,10 +27,13 @@ func main() {
 		exit.Fail()
 	}
 
-	var data []byte
+	if flags.outputFilePath == dump.OutputStdout {
+		defer fmt.Println() // new line to avoid `%` displayed at the end in Mac shell
+	}
 
+	var data dump.Marshaler
 	if contentType == dump.ContentTypeNALUTypes {
-		data, err = dump.Marshal(nalu.TypesMarshaler{}, format)
+		data = nalu.TypesMarshaler{}
 	} else { // need to parse
 
 		if len(flags.inputFilePath) == 0 {
@@ -45,12 +48,11 @@ func main() {
 				exit.Fail()
 			}
 		}
-		data, err = dump.Marshal(&h.ElementaryStream, format)
+		data = &h.ElementaryStream
 	}
 
-	if err != nil {
+	if err := dump.Dump(data, format, flags.outputFilePath); err != nil {
 		glog.Error(err)
-	} else {
-		fmt.Println(string(data))
+		exit.Fail()
 	}
 }

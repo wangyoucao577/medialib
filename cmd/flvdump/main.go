@@ -31,6 +31,10 @@ func main() {
 		exit.Fail()
 	}
 
+	if flags.outputFilePath == dump.OutputStdout {
+		defer fmt.Println() // new line to avoid `%` displayed at the end in Mac shell
+	}
+
 	h := flv.NewHandler(flags.inputFilePath)
 	if err := h.Parse(); err != nil {
 		if err != io.EOF {
@@ -40,11 +44,9 @@ func main() {
 	}
 
 	if contentType == dump.ContentTypeTags {
-		if data, err := dump.Marshal(h.FLV, format); err != nil {
+		if err := dump.Dump(h.FLV, format, flags.outputFilePath); err != nil {
 			glog.Error(err)
-		} else {
-			fmt.Println(string(data))
+			exit.Fail()
 		}
 	}
-
 }

@@ -1,60 +1,68 @@
 package main
 
 import (
+	"fmt"
 	"io"
-	"os"
 
-	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/mp4"
 	"github.com/wangyoucao577/medialib/util/dump"
-	"github.com/wangyoucao577/medialib/util/exit"
 )
 
-func parseMP4(inputFile string, format dump.Format, contentType dump.ContentType) ([]byte, error) {
+func parseMP4(inputFile string, format dump.Format, contentType dump.ContentType, output string) error {
 
 	// parse
 	m := mp4.New(inputFile)
 	if err := m.Parse(); err != nil {
 		if err != io.EOF {
-			glog.Errorf("Parse mp4 failed, err %v", err)
-			exit.Fail()
+			return fmt.Errorf("parse mp4 failed, err %v", err)
 		}
+	}
+
+	// output
+	w, closer, err := dump.CreateOutput(output)
+	if err != nil {
+		return err
+	}
+	if closer != nil {
+		defer closer.Close()
 	}
 
 	// parse avc/hevc es and print
 	if contentType == dump.ContentTypeES || contentType == dump.ContentTypeRawES {
-		if es, err := m.Boxes.ExtractES(0); err != nil {
-			glog.Errorf("Extract ES failed, err %v", err)
-			exit.Fail()
-		} else {
-			// print AVC ES
-			if contentType == dump.ContentTypeRawES {
-				if _, err := es.Dump(os.Stdout); err != nil {
-					glog.Errorf("Dump ES failed, err %v", err)
-					exit.Fail()
-				}
-				return nil, nil
-			} else {
-				return dump.Marshal(es, format)
-			}
+		es, err := m.Boxes.ExtractES(0)
+		if err != nil {
+			return fmt.Errorf("extract es failed, err %v", err)
 		}
+
+		// print AVC ES
+		if contentType == dump.ContentTypeRawES {
+			_, err = es.Dump(w)
+		} else {
+			err = dump.DumpToWriter(es, format, w)
+		}
+		if err != nil {
+			return fmt.Errorf("dump es failed, err %v", err)
+		}
+		return nil
 	}
 
 	// parse avc/hevc annexb es and print
 	if contentType == dump.ContentTypeRawAnnexBES {
-		if es, err := m.Boxes.ExtractAnnexBES(0); err != nil {
-			glog.Errorf("Extract ES failed, err %v", err)
-			exit.Fail()
-		} else {
-			// print AVC ES
-			if _, err := es.Dump(os.Stdout); err != nil {
-				glog.Errorf("Dump ES failed, err %v", err)
-				exit.Fail()
-			}
-			return nil, nil
+		es, err := m.Boxes.ExtractAnnexBES(0)
+		if err != nil {
+			return fmt.Errorf("extract annexb_es failed, err %v", err)
 		}
+
+		// print AVC ES
+		if _, err := es.Dump(w); err != nil {
+			return fmt.Errorf("dump annexb_es failed, err %v", err)
+		}
+		return nil
 	}
 
 	// print mp4 boxes
-	return dump.Marshal(m.Boxes, format)
+	if err = dump.DumpToWriter(m.Boxes, format, w); err != nil {
+		return fmt.Errorf("dump mp4 boxes failed, err %v", err)
+	}
+	return nil
 }

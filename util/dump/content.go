@@ -44,15 +44,19 @@ func (c ContentType) Description() string {
 	return d
 }
 
-// FixedLenString returns fixed-length string for better shown in helper, current 16 bytes, append space at the end.
-func (c ContentType) FixedLenString() string {
-	const fixedLen = 16
-	if len(c) >= fixedLen {
+// FixedLenString returns fixed-length string for better shown in helper, current max 16 bytes, append space at the end.
+func (c ContentType) FixedLenString(length int) string {
+	const maxFixedLen = 16
+	if length > maxFixedLen {
+		length = maxFixedLen
+	}
+
+	if len(c) >= length {
 		return c.String()
 	}
 
 	s := c.String()
-	for i := len(c); i < fixedLen; i++ {
+	for i := len(c); i < length; i++ {
 		s += " "
 	}
 	return s
