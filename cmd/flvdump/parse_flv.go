@@ -15,7 +15,7 @@ func parseFLV(inputFile string, format dump.Format, contentType dump.ContentType
 	h := flv.NewHandler(flags.inputFilePath)
 	if err := h.Parse(); err != nil {
 		if err != io.EOF {
-			glog.Errorf("Parse FLV failed but ignore to leverage the data has been parsed already, err %v", err)
+			glog.Warningf("Parse FLV failed but ignore to leverage the data has been parsed already, err %v", err)
 			// exit.Fail()	// ignore the error so that able to leverage the data has been parsed already
 		}
 	}

@@ -15,7 +15,7 @@ func parseMP4(inputFile string, format dump.Format, contentType dump.ContentType
 	m := mp4.New(inputFile)
 	if err := m.Parse(); err != nil {
 		if err != io.EOF {
-			glog.Errorf("Parse mp4 failed but ignore to leverage the data has been parsed already, err %v", err)
+			glog.Warningf("Parse mp4 failed but ignore to leverage the data has been parsed already, err %v", err)
 			// exit.Fail()	// ignore the error so that able to leverage the data has been parsed already
 		}
 	}

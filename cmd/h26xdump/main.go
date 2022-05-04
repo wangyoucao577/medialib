@@ -36,7 +36,7 @@ func main() {
 		h := annexbes.NewHandler(flags.inputFilePath)
 		if err := h.Parse(); err != nil {
 			if err != io.EOF {
-				glog.Errorf("Parse ES failed but ignore to leverage the data has been parsed already, err %v", err)
+				glog.Warningf("Parse ES failed but ignore to leverage the data has been parsed already, err %v", err)
 				// exit.Fail()	// ignore the error so that able to leverage the data has been parsed already
 			}
 		}
