@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 
+	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/util"
 )
 
@@ -65,6 +66,7 @@ func (m *Message) ParsePayload(r io.Reader) error {
 	}
 
 	// TODO: data
+	glog.Warningf("parsed %d bytes, still need to parse data")
 
 	return nil
 }
