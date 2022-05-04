@@ -34,16 +34,16 @@ type Header struct {
 	// Time in milliseconds at which the data in this tag applies.
 	// This value is relative to the first tag in the FLV file, which
 	// always has a timestamp of 0.
-	Timestamp24bits uint32 `json:"Timestamp24bits"` // 24 bits
+	Timestamp uint32 `json:"Timestamp"` // 24 bits
 
 	// Extension of the Timestamp field to form a SI32 value.
 	// This field represents the upper 8 bits, while the previous
 	// Timestamp field represents the lower 24 bits of the time in milliseconds.
 	TimestampExtended uint8 `json:"TimestampExtended"` // 8 bits
 
-	// Timestamp concats TimestampExtended and Timestamp24bits together to represent the real timestamp.
+	// Timestamp concats TimestampExtended and Timestamp together to represent the real timestamp.
 	// In contrast of other fields are stored in byte stream, it's calculated by TimestampExtended and Timestamp24bits.
-	Timestamp int32
+	TimestampCalculated int32 `json:"Timestamp_calculated"`
 
 	StreamID uint32 `json:"StreamID"` // Always 0. 24 bits
 }
@@ -58,9 +58,9 @@ func (h *Header) MarshalJSON() ([]byte, error) {
 
 		DataSize uint32 `json:"DataSize"` // 24 bits
 
-		Timestamp24bits   uint32 `json:"Timestamp24bits"`   // 24 bits
-		TimestampExtended uint8  `json:"TimestampExtended"` // 8 bits
-		Timestamp         int32
+		Timestamp           uint32 `json:"Timestamp"`         // 24 bits
+		TimestampExtended   uint8  `json:"TimestampExtended"` // 8 bits
+		TimestampCalculated int32  `json:"Timestamp_calculated"`
 
 		StreamID uint32 `json:"StreamID"` // Always 0. 24 bits
 	}{
@@ -71,9 +71,9 @@ func (h *Header) MarshalJSON() ([]byte, error) {
 
 		DataSize: h.DataSize,
 
-		Timestamp24bits:   h.Timestamp24bits,
-		TimestampExtended: h.TimestampExtended,
-		Timestamp:         h.Timestamp,
+		Timestamp:           h.Timestamp,
+		TimestampExtended:   h.TimestampExtended,
+		TimestampCalculated: h.TimestampCalculated,
 	}
 	return json.Marshal(hj)
 }
@@ -89,9 +89,9 @@ func (h *Header) Parse(r io.Reader) error {
 	h.TagType = data[0] & 0x1F
 	h.DataSize = binary.BigEndian.Uint32([]byte{0x00, data[1], data[2], data[3]})
 
-	h.Timestamp24bits = binary.BigEndian.Uint32([]byte{0x00, data[4], data[5], data[6]})
+	h.Timestamp = binary.BigEndian.Uint32([]byte{0x00, data[4], data[5], data[6]})
 	h.TimestampExtended = data[7]
-	h.Timestamp = int32((uint32(data[7]) << 24) | h.Timestamp24bits)
+	h.TimestampCalculated = int32((uint32(data[7]) << 24) | h.Timestamp)
 	h.StreamID = binary.BigEndian.Uint32([]byte{0x00, data[8], data[9], data[10]})
 	return nil
 }
