@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/golang/glog"
-	"github.com/wangyoucao577/medialib/flv"
+	"github.com/wangyoucao577/medialib/container/flv"
 	"github.com/wangyoucao577/medialib/util/dump"
 )
 

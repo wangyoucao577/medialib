@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/golang/glog"
-	"github.com/wangyoucao577/medialib/mp4/box"
+	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/util/dump"
 	"github.com/wangyoucao577/medialib/util/exit"
 	"github.com/wangyoucao577/medialib/video/avc/nalu"
