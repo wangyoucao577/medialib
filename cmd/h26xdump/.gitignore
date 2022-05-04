@@ -1,6 +1,6 @@
 
 # command and test data
-h26xdump
+h26xdump*
 *.json
 *.yaml
 *.yml

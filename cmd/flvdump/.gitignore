@@ -1,6 +1,6 @@
 
 # command and test data and test data
-flvdump
+flvdump*
 *.json
 *.yaml
 *.yml

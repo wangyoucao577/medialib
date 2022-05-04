@@ -1,6 +1,6 @@
 
 # command and test data
-mp4dump
+mp4dump*
 *.json
 *.yaml
 *.yml
