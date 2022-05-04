@@ -11,13 +11,17 @@ import (
 type DataValue struct {
 
 	// 	Type of the ScriptDataValue. The following types are defined:
-	// 0 = Number 1 = Boolean 2 = String
+	// 0 = Number
+	// 1 = Boolean
+	// 2 = String
 	// 3 = Object
-	// 4 = MovieClip (reserved, not supported) 5 = Null
+	// 4 = MovieClip (reserved, not supported)
+	// 5 = Null
 	// 6 = Undefined
 	// 7 = Reference
 	// 8 = ECMA array
-	// 9 = Object end marker 10 = Strict array
+	// 9 = Object end marker
+	// 10 = Strict array
 	// 11 = Date
 	// 12 = Long string
 	Type uint8 `json:"Type"`

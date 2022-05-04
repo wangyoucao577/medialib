@@ -1,3 +1,4 @@
+// Package rtmp implements RTMP protocol.
 package rtmp
 
 import (
