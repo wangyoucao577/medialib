@@ -10,6 +10,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/util"
 	"github.com/wangyoucao577/medialib/video/avc/nalu/aud"
+	"github.com/wangyoucao577/medialib/video/avc/nalu/filler"
 	"github.com/wangyoucao577/medialib/video/avc/nalu/pps"
 	"github.com/wangyoucao577/medialib/video/avc/nalu/sei"
 	"github.com/wangyoucao577/medialib/video/avc/nalu/slice"
@@ -35,6 +36,7 @@ type NALUnit struct {
 	PictureParameterSet      *pps.PictureParameterSet             `json:"picture_parameter_set,omitempty"`
 	IDR                      []slice.LayerWithoutPartitioningRbsp `json:"idr,omitempty"`
 	NonIDR                   []slice.LayerWithoutPartitioningRbsp `json:"non-idr,omitempty"`
+	FillerData               *filler.Data                         `json:"filler_data,omitempty"`
 }
 
 // MarshalJSON implements json.Marshaler.
@@ -59,6 +61,7 @@ func (n *NALUnit) MarshalJSON() ([]byte, error) {
 		PictureParameterSet      *pps.PictureParameterSet             `json:"picture_parameter_set,omitempty"`
 		IDR                      []slice.LayerWithoutPartitioningRbsp `json:"idr,omitempty"`
 		NonIDR                   []slice.LayerWithoutPartitioningRbsp `json:"non-idr,omitempty"`
+		FillerData               *filler.Data                         `json:"filler_data,omitempty"`
 	}{
 		// RawBytes:               n.RawBytes, // set by type
 
@@ -77,6 +80,7 @@ func (n *NALUnit) MarshalJSON() ([]byte, error) {
 		PictureParameterSet:      n.PictureParameterSet,
 		IDR:                      n.IDR,
 		NonIDR:                   n.NonIDR,
+		FillerData:               n.FillerData,
 	}
 
 	switch n.NALUnitType {
@@ -193,6 +197,9 @@ func (n *NALUnit) prepareRBRPParser() NALUParser {
 		newSlice := &n.NonIDR[len(n.NonIDR)-1]
 		newSlice.SetSequenceHeaders(n.SequenceParameterSetData, n.PictureParameterSet)
 		return newSlice
+	case TypeFillerData:
+		n.FillerData = &filler.Data{}
+		return n.FillerData
 
 		// TODO: others
 	}
