@@ -66,7 +66,7 @@ func (m *Message) ParsePayload(r io.Reader) error {
 	}
 
 	// TODO: data
-	glog.Warningf("parsed %d bytes, still need to parse data")
+	glog.Warningf("parsed %d bytes, still need to parse data", parsedBytes)
 
 	return nil
 }
