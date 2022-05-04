@@ -176,6 +176,7 @@ func (n *NALUnit) prepareRBRPParser() NALUParser {
 	switch n.NALUnitType {
 	case TypeSEI:
 		n.SEIMessage = &sei.SEIMessage{}
+		n.SEIMessage.SetSequenceHeaders(n.SequenceParameterSetData, n.PictureParameterSet)
 		return n.SEIMessage
 	case TypeAccessUnitDelimiter:
 		n.AccessUnitDelimiter = &aud.AccessUnitDelimiter{}

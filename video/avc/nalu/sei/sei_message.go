@@ -6,6 +6,8 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/util"
+	"github.com/wangyoucao577/medialib/video/avc/nalu/pps"
+	"github.com/wangyoucao577/medialib/video/avc/nalu/sps"
 )
 
 // SEIMessage represents AVC Supplemental enhancement information.
@@ -15,7 +17,19 @@ type SEIMessage struct {
 	PayloadSize         int   `json:"payload_size"`
 	LastPayloadSizeByte uint8 `json:"last_payload_size_byte"`
 
+	BufferingPeriod      *BufferingPeriod      `json:"buffering_period,omitempty"`
+	PicTiming            *PicTiming            `json:"pic_timing,omitempty"`
 	UserDataUnregistered *UserDataUnregistered `json:"user_data_unregistered,omitempty"`
+
+	// store for some internal parsing
+	sps *sps.SequenceParameterSetData `json:"-"`
+	pps *pps.PictureParameterSet      `json:"-"`
+}
+
+// SetSequenceHeaders sets both SPS and PPS for parsing.
+func (s *SEIMessage) SetSequenceHeaders(sps *sps.SequenceParameterSetData, pps *pps.PictureParameterSet) {
+	s.sps = sps
+	s.pps = pps
 }
 
 // Parse parses bytes to AVC NAL Unit, return parsed bytes or error.
@@ -57,16 +71,29 @@ func (s *SEIMessage) Parse(r io.Reader, size int) (uint64, error) {
 		s.PayloadSize += 255
 	}
 
+	var parser payloadParser
 	switch s.PayloadType {
+	case PayloadTypeBufferingPeriod:
+		s.BufferingPeriod = &BufferingPeriod{}
+		s.BufferingPeriod.setSequenceHeaders(s.sps, s.pps)
+		parser = s.BufferingPeriod
+	case PayloadTypePicTiming:
+		s.PicTiming = &PicTiming{}
+		s.PicTiming.setSequenceHeaders(s.sps, s.pps)
+		parser = s.PicTiming
 	case PayloadTypeUserDataUnregistered:
 		s.UserDataUnregistered = &UserDataUnregistered{}
-		if bytes, err := s.UserDataUnregistered.parse(r, s.PayloadSize); err != nil {
+		parser = s.UserDataUnregistered
+	default:
+		glog.Warningf("unknown SEI payload type %d, ignore %d bytes", s.PayloadType, s.PayloadSize)
+	}
+
+	if parser != nil {
+		if bytes, err := parser.parse(r, s.PayloadSize); err != nil {
 			return parsedBytes, err
 		} else {
 			parsedBytes += bytes
 		}
-	default:
-		glog.Warningf("unknown SEI payload type %d, ignore %d bytes", s.PayloadType, s.PayloadSize)
 	}
 
 	return parsedBytes, nil
