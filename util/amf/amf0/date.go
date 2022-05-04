@@ -34,3 +34,15 @@ func (d *Date) Decode(r io.Reader) (int, error) {
 
 	return parsedBytes, nil
 }
+
+// Encode implements encoder interface.
+func (d Date) Encode() ([]byte, error) {
+	data := make([]byte, 8)
+	binary.BigEndian.PutUint64(data, d.Timestamp)
+
+	tzData := make([]byte, 8)
+	binary.BigEndian.PutUint16(tzData, uint16(d.TimeZone))
+	data = append(data, tzData...)
+
+	return data, nil
+}

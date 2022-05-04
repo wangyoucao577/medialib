@@ -40,3 +40,20 @@ func (e *ECMAArrayPayload) Decode(r io.Reader) (int, error) {
 	}
 	return parsedBytes, nil
 }
+
+// Encode implements encoder interface.
+func (e ECMAArrayPayload) Encode() ([]byte, error) {
+
+	data := make([]byte, 4)
+	binary.BigEndian.PutUint32(data, e.Count)
+
+	for _, op := range e.ObjectProperty {
+		if d, err := op.Encode(); err != nil {
+			return data, err
+		} else {
+			data = append(data, d...)
+		}
+	}
+
+	return data, nil
+}

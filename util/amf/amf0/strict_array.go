@@ -40,3 +40,19 @@ func (s *StrictArrayPayload) Decode(r io.Reader) (int, error) {
 	}
 	return parsedBytes, nil
 }
+
+// Encode implements encoder interface.
+func (s StrictArrayPayload) Encode() ([]byte, error) {
+	data := make([]byte, 4)
+	binary.BigEndian.PutUint32(data, s.Count)
+
+	for _, v := range s.ValueType {
+		if d, err := v.Encode(); err != nil {
+			return data, err
+		} else {
+			data = append(data, d...)
+		}
+	}
+
+	return data, nil
+}

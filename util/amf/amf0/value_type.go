@@ -102,3 +102,69 @@ func (v *ValueType) Decode(r io.Reader) (int, error) {
 
 	return parsedBytes, nil
 }
+
+// Encode encodes AMF0 value type to bytes.
+func (v ValueType) Encode() ([]byte, error) {
+	data := []byte{v.TypeMarker}
+
+	var enc encoder
+	switch v.TypeMarker {
+	case TypeMarkerNumber:
+		if f, err := v.AsNumber(); err != nil {
+			return data, err
+		} else {
+			numData := make([]byte, 8)
+			binary.BigEndian.PutUint64(numData, math.Float64bits(f))
+			data = append(data, numData...)
+		}
+	case TypeMarkerBoolean:
+		if b, err := v.AsBoolean(); err != nil {
+			return data, err
+		} else {
+			var bData byte
+			if b {
+				bData = 0x1
+			}
+			data = append(data, bData)
+		}
+	case TypeMarkerReference:
+		if u, ok := v.Value.(uint16); !ok {
+			return data, fmt.Errorf("value type %v as uint16 failed", v)
+		} else {
+			uData := make([]byte, 2)
+			binary.BigEndian.PutUint16(uData, u)
+			data = append(data, uData...)
+		}
+
+	case TypeMarkerNull: // nothing to do
+	case TypeMarkerUndefined: // nothing to do
+	case TypeMarkerObjectEnd: // nothing to do
+
+	case TypeMarkerString:
+		fallthrough
+	case TypeMarkerObject:
+		fallthrough
+	case TypeMarkerECMAArray:
+		fallthrough
+	case TypeMarkerStrictArray:
+		fallthrough
+	case TypeMarkerDate:
+		if converted, ok := v.Value.(encoder); !ok {
+			return data, fmt.Errorf("value type %v as encoder interface failed", v)
+		} else {
+			enc = converted
+		}
+	default:
+		return data, fmt.Errorf("AMF0 type %d(%s) unsupported", v.TypeMarker, TypeMarkerDescription(int(v.TypeMarker)))
+	}
+
+	if enc != nil {
+		if encodedData, err := enc.Encode(); err != nil {
+			return data, err
+		} else {
+			data = append(data, encodedData...)
+		}
+	}
+
+	return data, nil
+}

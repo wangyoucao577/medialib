@@ -2,6 +2,7 @@ package amf0
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 
 	"github.com/wangyoucao577/medialib/util"
@@ -35,4 +36,18 @@ func (s *StringPayload) Decode(r io.Reader) (int, error) {
 	}
 
 	return parsedBytes, nil
+}
+
+// Encode encodes StringPayload to AMF0 byte stream.
+func (s StringPayload) Encode() ([]byte, error) {
+	if int(s.Length) != len(s.Str) {
+		return nil, fmt.Errorf("string length %d is not equal to len(str) %d", s.Length, len(s.Str))
+	}
+
+	data := make([]byte, 2)
+	binary.BigEndian.PutUint16(data, s.Length)
+
+	data = append(data, []byte(s.Str)...)
+
+	return data, nil
 }

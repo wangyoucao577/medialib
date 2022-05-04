@@ -2,7 +2,7 @@ package amf0
 
 import "io"
 
-// ObjectProperty represents
+// ObjectProperty represents AMF0 object property.
 type ObjectProperty struct {
 	String    StringPayload `json:"name"`
 	ValueType ValueType     `json:"value_type"`
@@ -50,4 +50,38 @@ func (o *ObjectPayload) Decode(r io.Reader) (int, error) {
 		}
 	}
 	return parsedBytes, nil
+}
+
+// Encode implements encoder interface.
+func (o ObjectProperty) Encode() ([]byte, error) {
+	var data []byte
+
+	if s, err := o.String.Encode(); err != nil {
+		return data, err
+	} else {
+		data = append(data, s...)
+	}
+
+	if v, err := o.ValueType.Encode(); err != nil {
+		return data, err
+	} else {
+		data = append(data, v...)
+	}
+
+	return data, nil
+}
+
+// Encode implements encoder interface.
+func (o ObjectPayload) Encode() ([]byte, error) {
+	var data []byte
+
+	for _, op := range o.ObjectProperty {
+		if d, err := op.Encode(); err != nil {
+			return data, err
+		} else {
+			data = append(data, d...)
+		}
+	}
+
+	return data, nil
 }
