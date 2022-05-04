@@ -281,15 +281,16 @@ func (p *PictureParameterSet) Parse(r io.Reader, size int) (uint64, error) {
 			//TODO: scaling list parse
 			glog.Warningf("pps scaling list parse doesn't support yet, refer to SPS implementation and do it here")
 		}
-
-		expSigned = &expgolombcoding.Signed{}
-		if costBits, err := expSigned.Parse(br); err != nil {
-			return parsedBits / bitsPerByte, err
-		} else {
-			parsedBits += costBits
-		}
-		p.SecondChromaQpIndexOffset = expSigned
 	}
+
+	expSigned = &expgolombcoding.Signed{}
+	if costBits, err := expSigned.Parse(br); err != nil {
+		return parsedBits / bitsPerByte, err
+	} else {
+		parsedBits += costBits
+	}
+	p.SecondChromaQpIndexOffset = expSigned
+
 	if br.CachedBitsCount() > 0 {
 		ignoreBits := uint(br.CachedBitsCount())
 		if _, err := br.ReadBits(ignoreBits); err != nil { // ignore rbsp_stop_one_bit and several rbsp_alignment_zero_bit
