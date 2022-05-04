@@ -1,8 +1,6 @@
 package sps
 
 import (
-	"fmt"
-
 	"github.com/wangyoucao577/medialib/util/bitreader"
 	"github.com/wangyoucao577/medialib/util/expgolombcoding"
 )
@@ -23,6 +21,77 @@ type HrdParameters struct {
 
 // return parsed bits
 func (h *HrdParameters) parse(br *bitreader.Reader) (uint64, error) {
-	//TODO:
-	return 0, fmt.Errorf("hrd_parameters parsing doesn't impemented yet")
+	var parsedBits uint64
+
+	expUnsigned := &expgolombcoding.Unsigned{}
+	if costBits, err := expUnsigned.Parse(br); err != nil {
+		return parsedBits, err
+	} else {
+		parsedBits += costBits
+	}
+	h.CpbCntMinus1 = *expUnsigned
+
+	if nextByte, err := br.ReadByte(); err != nil {
+		return parsedBits, err
+	} else {
+		h.BitRateScale = (nextByte >> 4) & 0xF
+		h.CpbSizeScale = nextByte & 0xF
+		parsedBits += 8
+	}
+
+	for i := 0; i <= int(h.CpbCntMinus1.Value()); i++ {
+
+		expUnsigned = &expgolombcoding.Unsigned{}
+		if costBits, err := expUnsigned.Parse(br); err != nil {
+			return parsedBits, err
+		} else {
+			parsedBits += costBits
+		}
+		h.BitRateValueMinus1 = append(h.BitRateValueMinus1, *expUnsigned)
+
+		expUnsigned = &expgolombcoding.Unsigned{}
+		if costBits, err := expUnsigned.Parse(br); err != nil {
+			return parsedBits, err
+		} else {
+			parsedBits += costBits
+		}
+		h.CpbSizeValueMinus1 = append(h.CpbSizeValueMinus1, *expUnsigned)
+
+		if nextBit, err := br.ReadBit(); err != nil {
+			return parsedBits, err
+		} else {
+			h.CbrFlag = append(h.CbrFlag, nextBit)
+			parsedBits += 1
+		}
+	}
+
+	if nextBits, err := br.ReadBits(5); err != nil {
+		return parsedBits, err
+	} else {
+		h.InitialCpbRemovalDelayLengthMinus1 = nextBits[0] & 0x1F
+		parsedBits += 5
+	}
+
+	if nextBits, err := br.ReadBits(5); err != nil {
+		return parsedBits, err
+	} else {
+		h.CpbRemovalDelayLengthMinus1 = nextBits[0] & 0x1F
+		parsedBits += 5
+	}
+
+	if nextBits, err := br.ReadBits(5); err != nil {
+		return parsedBits, err
+	} else {
+		h.DpbOutputDelayLengthMinus1 = nextBits[0] & 0x1F
+		parsedBits += 5
+	}
+
+	if nextBits, err := br.ReadBits(5); err != nil {
+		return parsedBits, err
+	} else {
+		h.TimeOffsetLength = nextBits[0] & 0x1F
+		parsedBits += 5
+	}
+
+	return parsedBits, nil
 }
