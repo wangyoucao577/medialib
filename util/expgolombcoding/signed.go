@@ -2,6 +2,7 @@ package expgolombcoding
 
 import (
 	"encoding/json"
+	"math"
 
 	"github.com/wangyoucao577/medialib/util/bitreader"
 )
@@ -18,8 +19,10 @@ func (s *Signed) MarshalJSON() ([]byte, error) {
 
 // Value returns parsed value.
 func (s *Signed) Value() int64 {
-	//TODO: correct signed value
-	return int64(s.unsigned.value)
+	// ISO/IEC-14496-10 9.1.1
+	v := math.Ceil(float64(s.unsigned.value) / 2)
+	v *= math.Pow(-1, float64(s.unsigned.value+1))
+	return int64(v)
 }
 
 // Parse parses unsigned value of Exponential-Golomb Coding.
