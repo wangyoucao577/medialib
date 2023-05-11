@@ -8,6 +8,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/container/mp4/box/mdia"
 	"github.com/wangyoucao577/medialib/container/mp4/box/tkhd"
+	"github.com/wangyoucao577/medialib/container/mp4/box/uuid"
 )
 
 // Box represents a trak box.
@@ -16,6 +17,7 @@ type Box struct {
 
 	Tkhd *tkhd.Box `json:"tkhd,omitempty"`
 	Mdia *mdia.Box `json:"mdia,omitempty"`
+	Uuid *uuid.Box `json:"uuid,omitempty"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -30,6 +32,7 @@ func New(h box.Header) box.Box {
 		boxesCreator: map[string]box.NewFunc{
 			box.TypeTkhd: tkhd.New,
 			box.TypeMdia: mdia.New,
+			box.TypeUUID: uuid.New,
 		},
 	}
 }
@@ -52,6 +55,8 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		b.Tkhd = createdBox.(*tkhd.Box)
 	case box.TypeMdia:
 		b.Mdia = createdBox.(*mdia.Box)
+	case box.TypeUUID:
+		b.Uuid = createdBox.(*uuid.Box)
 	}
 
 	return createdBox, nil

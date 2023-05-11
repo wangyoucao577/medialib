@@ -8,6 +8,7 @@ import (
 	"io"
 
 	"github.com/golang/glog"
+	"github.com/google/uuid"
 	"github.com/wangyoucao577/medialib/util"
 )
 
@@ -29,7 +30,7 @@ type Header struct {
 	Size      uint32           `json:"size"`
 	Type      FixedArray4Bytes `json:"type"` // 32 bits
 	LargeSize uint64           `json:"large_size,omitempty"`
-	UserType  *[16]uint8       `json:"user_type,omitempty"`
+	UserType  *uuid.UUID       `json:"user_type,omitempty"`
 
 	// internal fields
 	headerSize  uint64 `json:"-"`
@@ -114,7 +115,7 @@ func (h *Header) Parse(r io.Reader) error {
 
 	// user type
 	if string(h.Type[:]) == TypeUUID {
-		h.UserType = &[16]uint8{}
+		h.UserType = &uuid.UUID{}
 		if err := util.ReadOrError(r, h.UserType[:]); err != nil {
 			return err
 		}
@@ -144,7 +145,9 @@ func (h FullHeader) String() string {
 }
 
 // ParseVersionFlag assumes Header has been prepared already,
-// 	and try to parse additional `version` and `flag`.`
+//
+//	and try to parse additional `version` and `flag`.`
+//
 // Be aware that it will decrease `PayloadSize` after succeed.
 func (f *FullHeader) ParseVersionFlag(r io.Reader) error {
 	if err := f.Header.Validate(); err != nil {
