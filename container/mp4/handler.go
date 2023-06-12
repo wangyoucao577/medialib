@@ -1,4 +1,4 @@
-//Package mp4 defines mp4 handlers and structures.
+// Package mp4 defines mp4 handlers and structures.
 package mp4
 
 import (
