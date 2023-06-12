@@ -1,6 +1,6 @@
 package audio
 
-// 	The following values are defined:
+// The following values are defined:
 const (
 	AACPacketTypeSequenceHeader = 0 // 0 = AAC sequence header
 	AACPacketTypeRaw            = 1 // 1 = AAC raw

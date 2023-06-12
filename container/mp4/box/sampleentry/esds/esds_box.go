@@ -1,7 +1,8 @@
 // Package esds represents ES Descriptor Box.
 // Most of ES_Descriptor and it's sub descriptors were described in ISO/IEC-14496-1.
 // However, I reference a lot from below chromium implementation for many details:
-// 	https://chromium.googlesource.com/chromium/src/media/+/16ba1c56b860d53d7354c0ec9538650cf1f20e2d/mp4/es_descriptor.cc
+//
+//	https://chromium.googlesource.com/chromium/src/media/+/16ba1c56b860d53d7354c0ec9538650cf1f20e2d/mp4/es_descriptor.cc
 package esds
 
 import (

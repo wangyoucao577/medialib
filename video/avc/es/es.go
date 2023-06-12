@@ -34,7 +34,7 @@ type ElementaryStream struct {
 }
 
 // SetLengthSize sets length size before every nalu.
-// It's mandantory that should be set before `Parse``.
+// It's mandantory that should be set before `Parse`.
 func (e *ElementaryStream) SetLengthSize(l uint32) {
 	e.LengthSize = l
 }
