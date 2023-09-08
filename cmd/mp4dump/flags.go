@@ -53,7 +53,7 @@ func getConentType() (dump.ContentType, error) {
 
 func init() {
 	flag.StringVar(&flags.inputFilePath, "i", "", `Input mp4/fmp4 file url.`)
-	flag.StringVar(&flags.content, "content", dump.ContentTypeES, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
+	flag.StringVar(&flags.content, "content", dump.ContentTypeBoxes, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
 	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")
 }
