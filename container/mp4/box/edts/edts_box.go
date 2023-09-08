@@ -1,25 +1,19 @@
-// Package trak represents Track Reference Box.
-package trak
+// Package edts represents Edit Box.
+package edts
 
 import (
 	"io"
 
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/container/mp4/box"
-	"github.com/wangyoucao577/medialib/container/mp4/box/edts"
-	"github.com/wangyoucao577/medialib/container/mp4/box/mdia"
-	"github.com/wangyoucao577/medialib/container/mp4/box/tkhd"
-	"github.com/wangyoucao577/medialib/container/mp4/box/uuid"
+	"github.com/wangyoucao577/medialib/container/mp4/box/elst"
 )
 
 // Box represents a trak box.
 type Box struct {
-	box.FullHeader `json:"full_header"`
+	box.Header `json:"header"`
 
-	Tkhd *tkhd.Box  `json:"tkhd,omitempty"`
-	Mdia *mdia.Box  `json:"mdia,omitempty"`
-	Uuid *uuid.Box  `json:"uuid,omitempty"`
-	Edts []edts.Box `json:"edts,omitempty"`
+	Elst *elst.Box `json:"elst,omitempty"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -27,15 +21,10 @@ type Box struct {
 // New creates a new Box.
 func New(h box.Header) box.Box {
 	return &Box{
-		FullHeader: box.FullHeader{
-			Header: h,
-		},
+		Header: h,
 
 		boxesCreator: map[string]box.NewFunc{
-			box.TypeTkhd: tkhd.New,
-			box.TypeMdia: mdia.New,
-			box.TypeUUID: uuid.New,
-			box.TypeEdts: edts.New,
+			box.TypeElst: elst.New,
 		},
 	}
 }
@@ -54,15 +43,8 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 	}
 
 	switch h.Type.String() {
-	case box.TypeTkhd:
-		b.Tkhd = createdBox.(*tkhd.Box)
-	case box.TypeMdia:
-		b.Mdia = createdBox.(*mdia.Box)
-	case box.TypeUUID:
-		b.Uuid = createdBox.(*uuid.Box)
-	case box.TypeEdts:
-		b.Edts = append(b.Edts, *createdBox.(*edts.Box))
-		createdBox = &b.Edts[len(b.Edts)-1] // reference to the last empty free box
+	case box.TypeElst:
+		b.Elst = createdBox.(*elst.Box)
 	}
 
 	return createdBox, nil
