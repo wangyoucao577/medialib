@@ -3,8 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/golang/glog"
+	"github.com/wangyoucao577/medialib/protocol"
+	"github.com/wangyoucao577/medialib/protocol/rtmp"
 	"github.com/wangyoucao577/medialib/util/dump"
 	"github.com/wangyoucao577/medialib/util/exit"
 	"github.com/wangyoucao577/medialib/video/avc/nalu"
@@ -32,6 +36,20 @@ func main() {
 			glog.Error(err)
 			exit.Fail()
 		}
+		return
+	}
+
+	if strings.HasPrefix(flags.inputFilePath, protocol.SchemaRTMP) { // rtmp
+		h, err := rtmp.NewHandler(flags.inputFilePath)
+		if err != nil {
+			glog.Error(err)
+			exit.Fail()
+		}
+		if err := h.Connect(time.Second * 3); err != nil {
+			glog.Error(err)
+			exit.Fail()
+		}
+		defer h.Close()
 		return
 	}
 

@@ -54,7 +54,18 @@ func (h *Handler) Connect(timeout time.Duration) error {
 		return err
 	}
 
+	// connect command
+	if err = h.connect(); err != nil {
+		return err
+	}
+
 	glog.Infof("connected %s, takes %f seconds", serverAddress, time.Since(startTime).Seconds())
+	return nil
+}
+
+// connect command
+func (h *Handler) connect() error {
+	//TODO:
 	return nil
 }
 
