@@ -14,6 +14,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box/mdat"
 	"github.com/wangyoucao577/medialib/container/mp4/box/moof"
 	"github.com/wangyoucao577/medialib/container/mp4/box/moov"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sidx"
 	"github.com/wangyoucao577/medialib/video/avc/annexbes"
 	"github.com/wangyoucao577/medialib/video/avc/es"
 )
@@ -31,6 +32,7 @@ type Boxes struct {
 	Moov     *moov.Box  `json:"moov,omitempty"`
 	MoofMdat []MoofMdat `json:"moof_mdat,omitempty"` // for fmp4, make sure moof,mdat can be pared and stored interleavely
 	Mdat     []mdat.Box `json:"mdat,omitempty"`      // for  mp4 that doesn't have moof
+	Sidx     []sidx.Box `json:"sidx,omitempty"`
 
 	//TODO: other boxes
 
@@ -47,6 +49,7 @@ func newBoxes() Boxes {
 			box.TypeMdat: mdat.New,
 			box.TypeMoov: moov.New,
 			box.TypeMoof: moof.New,
+			box.TypeSidx: sidx.New,
 		},
 	}
 }
@@ -115,6 +118,9 @@ func (b *Boxes) CreateSubBox(h box.Header) (box.Box, error) {
 		// Moof is required present before Mdat, so always create a new one if moof encountered.
 		b.MoofMdat = append(b.MoofMdat, MoofMdat{Moof: *createdBox.(*moof.Box)})
 		createdBox = &b.MoofMdat[len(b.MoofMdat)-1].Moof // reference to the last empty moof box
+	case box.TypeSidx:
+		b.Sidx = append(b.Sidx, *createdBox.(*sidx.Box))
+		createdBox = &b.Sidx[len(b.Sidx)-1] // reference to the last empty sidx box
 	}
 
 	return createdBox, nil

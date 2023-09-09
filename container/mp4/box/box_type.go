@@ -58,6 +58,7 @@ const (
 	TypeTrex = "trex"
 	TypeEdts = "edts"
 	TypeElst = "elst"
+	TypeSidx = "sidx"
 
 	// sample entry
 	TypeVide = "vide"
@@ -115,6 +116,7 @@ var boxTypes = map[string]BasicInfo{
 	TypeTrex: {Name: "Track Extends Box"},
 	TypeEdts: {Name: "Edit Box"},
 	TypeElst: {Name: "Edit List Box"},
+	TypeSidx: {Name: "Segment Index Box"},
 
 	TypeVide: {Name: "Visual Sample Entry"},
 	TypeSoun: {Name: "Audio Sample Entry"},
