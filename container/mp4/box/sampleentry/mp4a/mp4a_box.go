@@ -7,6 +7,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/btrt"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/esds"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/soun"
 )
@@ -16,6 +17,7 @@ type MP4VisualSampleEntry struct {
 	soun.AudioSampleEntry
 
 	Esds *esds.Box `json:"esds"`
+	Btrt *btrt.Box `json:"btrt,omitempty"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -31,6 +33,7 @@ func New(h box.Header) box.Box {
 
 		boxesCreator: map[string]box.NewFunc{
 			box.TypeEsds: esds.New,
+			box.TypeBtrt: btrt.New,
 		},
 	}
 }
@@ -51,6 +54,8 @@ func (m *MP4VisualSampleEntry) CreateSubBox(h box.Header) (box.Box, error) {
 	switch h.Type.String() {
 	case box.TypeEsds:
 		m.Esds = createdBox.(*esds.Box)
+	case box.TypeBtrt:
+		m.Btrt = createdBox.(*btrt.Box)
 	}
 
 	return createdBox, nil
