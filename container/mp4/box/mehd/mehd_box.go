@@ -2,6 +2,7 @@
 package mehd
 
 import (
+	"encoding/binary"
 	"io"
 
 	"github.com/golang/glog"
@@ -12,6 +13,8 @@ import (
 // Box represents a mehd box.
 type Box struct {
 	box.FullHeader `json:"full_header"`
+
+	FragmentDuration uint64 `json:"fragment_duration"`
 }
 
 // New creates a new Box.
@@ -35,10 +38,18 @@ func (b *Box) ParsePayload(r io.Reader) error {
 		return err
 	}
 
-	glog.Warningf("box type %s payload bytes %d parsing TODO", b.Type, b.PayloadSize())
-	//TODO: parse payload
-	if err := util.ReadOrError(r, make([]byte, b.PayloadSize())); err != nil {
-		return err
+	if b.Version == 1 {
+		data := make([]byte, 8)
+		if err := util.ReadOrError(r, data); err != nil {
+			return err
+		}
+		b.FragmentDuration = binary.BigEndian.Uint64(data)
+	} else {
+		data := make([]byte, 4)
+		if err := util.ReadOrError(r, data); err != nil {
+			return err
+		}
+		b.FragmentDuration = uint64(binary.BigEndian.Uint32(data))
 	}
 
 	return nil
