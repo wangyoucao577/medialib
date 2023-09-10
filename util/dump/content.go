@@ -23,8 +23,8 @@ var conentDescriptions = map[ContentType]string{
 	ContentTypeBoxes:       "parsed mp4/fmp4 boxes",
 	ContentTypeTags:        "parsed flv header and tags",
 	ContentTypeES:          "parsed avc/hevc elementary stream",
-	ContentTypeRawES:       "extracted raw data of avc/hevc avc/hevc elementary stream, mp4 video elementary stream only, no sps/pps",
-	ContentTypeRawAnnexBES: "extracted raw data of avc/hevc avc/hevc elementary stream by AnnexB byte format, including video elementary stream and parameter set elementary stream",
+	ContentTypeRawES:       "extracted raw data of avc/hevc elementary stream, mp4 video elementary stream only, no sps/pps",
+	ContentTypeRawAnnexBES: "extracted raw data of avc/hevc elementary stream described by AnnexB byte format, including video elementary stream and parameter set elementary stream",
 
 	ContentTypeBoxTypes:  "supported box types",
 	ContentTypeNALUTypes: "supported nal unit types",

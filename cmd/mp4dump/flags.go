@@ -19,8 +19,6 @@ var supportedContentTypes = []dump.ContentType{
 	dump.ContentTypeNALUTypes,
 
 	dump.ContentTypeES,
-	dump.ContentTypeRawES,
-	dump.ContentTypeRawAnnexBES,
 	dump.ContentTypeBoxes, // NOTE: put default at the end to align with `-h` shown
 }
 
@@ -74,8 +72,6 @@ func validateFlags() error {
 	}
 
 	if contentType == dump.ContentTypeES ||
-		contentType == dump.ContentTypeRawES ||
-		contentType == dump.ContentTypeRawAnnexBES ||
 		contentType == dump.ContentTypeBoxes {
 		if len(flags.inputFilePath) == 0 {
 			return fmt.Errorf("input file is required")

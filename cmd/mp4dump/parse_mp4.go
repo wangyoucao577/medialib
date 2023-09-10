@@ -30,7 +30,7 @@ func parseMP4(inputFile string, format dump.Format, contentType dump.ContentType
 	}
 
 	// parse avc/hevc es and print
-	if contentType == dump.ContentTypeES || contentType == dump.ContentTypeRawES {
+	if contentType == dump.ContentTypeES {
 		es, err := m.Boxes.ExtractES(0)
 		if err != nil {
 			return fmt.Errorf("extract es failed, err %v", err)
@@ -44,20 +44,6 @@ func parseMP4(inputFile string, format dump.Format, contentType dump.ContentType
 		}
 		if err != nil {
 			return fmt.Errorf("dump es failed, err %v", err)
-		}
-		return nil
-	}
-
-	// parse avc/hevc annexb es and print
-	if contentType == dump.ContentTypeRawAnnexBES {
-		es, err := m.Boxes.ExtractAnnexBES(0)
-		if err != nil {
-			return fmt.Errorf("extract annexb_es failed, err %v", err)
-		}
-
-		// print AVC ES
-		if _, err := es.Dump(w); err != nil {
-			return fmt.Errorf("dump annexb_es failed, err %v", err)
 		}
 		return nil
 	}
