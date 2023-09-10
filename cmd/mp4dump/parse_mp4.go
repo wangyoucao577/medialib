@@ -37,11 +37,7 @@ func parseMP4(inputFile string, format dump.Format, contentType dump.ContentType
 		}
 
 		// print AVC ES
-		if contentType == dump.ContentTypeRawES {
-			_, err = es.Dump(w)
-		} else {
-			err = dump.DumpToWriter(es, format, w)
-		}
+		err = dump.DumpToWriter(es, format, w)
 		if err != nil {
 			return fmt.Errorf("dump es failed, err %v", err)
 		}
