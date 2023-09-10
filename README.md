@@ -4,6 +4,16 @@
 ## Tools
 Below tools are available in [cmd](cmd).     
 
+```
+cmd
+|-- flv2avc
+|-- flvdump
+|-- h26xdump
+|-- mp42avc
+`-- mp4dump
+```
+
+
 | Name | Description | 
 | - | - |
 | `flvdump` | displays the tags structure of an flv file, as `json` or `yaml` |
@@ -14,33 +24,33 @@ Below tools are available in [cmd](cmd).
 
 ### Examples     
 
-- Dump `tags` of an `flv` file    
+- dump `tags` of an `flv` file    
 
 ```
 ./flvdump -logtostderr -i in.flv -o dump.json
 ./flvdump -logtostderr -i in.flv -format yaml -o dump.yaml 
 ```
 
-- Extract `.h264` of an `flv` file 
+- extract `.h264` of an `flv` file 
 
 ```
 ./flv2avc -logtostderr -i in.flv -o out.h264 
 ```
 
-- Dump `boxes` of an `mp4` file    
+- dump `boxes` of an `mp4` file    
 
 ```
 ./mp4dump -logtostderr -i in.mp4 -o dump.json
 ./mp4dump -logtostderr -i in.mp4 -format yaml -o dump.yaml 
 ```
 
-- Extract `.h264` of an `mp4` file 
+- extract `.h264` of an `mp4` file 
 
 ```
 ./mp42avc -logtostderr -i in.mp4 -o out.h264 
 ```
 
-- Dump `nalus` of an `.h264` file
+- dump `nalus` of an `.h264` file
 
 ```
 ./h26xdump -logtostderr -i in.h264 -o dump.json
