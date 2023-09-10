@@ -9,7 +9,7 @@ import (
 	"github.com/wangyoucao577/medialib/util/dump"
 )
 
-func parseFLV(inputFile string, format dump.Format, contentType dump.ContentType, output string) error {
+func parseFLV(inputFile string, contentType dump.ContentType, output string) error {
 
 	// parse
 	h := flv.NewHandler(flags.inputFilePath)
@@ -30,23 +30,24 @@ func parseFLV(inputFile string, format dump.Format, contentType dump.ContentType
 	}
 
 	// parse avc/hevc es and print
-	if contentType == dump.ContentTypeES {
+	switch contentType {
+	case dump.ContentTypeRawES:
 		es, err := h.FLV.ExtractES()
 		if err != nil {
 			return fmt.Errorf("extract es failed, err %v", err)
 		}
-
-		// print AVC ES
-		err = dump.DumpToWriter(es, format, w)
-		if err != nil {
+		if _, err = es.Dump(w); err != nil {
 			return fmt.Errorf("dump es failed, err %v", err)
 		}
-		return nil
+	case dump.ContentTypeRawAnnexBES:
+		es, err := h.FLV.ExtractAnnexBES()
+		if err != nil {
+			return fmt.Errorf("extract annexb_es failed, err %v", err)
+		}
+		if _, err := es.Dump(w); err != nil {
+			return fmt.Errorf("dump annexb_es failed, err %v", err)
+		}
 	}
 
-	// print flv boxes
-	if err = dump.DumpToWriter(h.FLV, format, w); err != nil {
-		return fmt.Errorf("dump flv tags failed, err %v", err)
-	}
 	return nil
 }

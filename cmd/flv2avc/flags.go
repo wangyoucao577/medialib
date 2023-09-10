@@ -11,14 +11,11 @@ var flags struct {
 	inputFilePath  string
 	outputFilePath string
 	content        string // content to output
-	format         string
 }
 
 var supportedContentTypes = []dump.ContentType{
-	dump.ContentTypeNALUTypes,
-
-	dump.ContentTypeES,
-	dump.ContentTypeTags, // NOTE: put default at the end to align with `-h` shown
+	dump.ContentTypeRawES,
+	dump.ContentTypeRawAnnexBES,
 }
 
 func supportedConentTypesHelper() string {
@@ -50,16 +47,11 @@ func getConentType() (dump.ContentType, error) {
 
 func init() {
 	flag.StringVar(&flags.inputFilePath, "i", "", "Input flv file url.")
-	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
-	flag.StringVar(&flags.content, "content", dump.ContentTypeTags, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
+	flag.StringVar(&flags.content, "content", dump.ContentTypeRawAnnexBES, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
 	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")
 }
 
 func validateFlags() error {
-	_, err := dump.GetFormat(flags.format)
-	if err != nil {
-		return err
-	}
 
 	contentType, err := getConentType()
 	if err != nil {
@@ -70,8 +62,8 @@ func validateFlags() error {
 		return fmt.Errorf("output should not be empty")
 	}
 
-	if contentType == dump.ContentTypeES ||
-		contentType == dump.ContentTypeTags {
+	if contentType == dump.ContentTypeRawES ||
+		contentType == dump.ContentTypeRawAnnexBES {
 		if len(flags.inputFilePath) == 0 {
 			return fmt.Errorf("input file is required")
 		}
