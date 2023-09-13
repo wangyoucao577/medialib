@@ -16,11 +16,16 @@ jobs:
       with:
         go-version: 'stable'
         cache: false
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Build & Test
       run: |
         go build -v ./...
-        go test -v ./...
+        go test -coverprofile=c.out -v ./...
+        go tool cover -func=c.out
+        go tool cover -html=c.out -o coverage.html
+    - uses: actions/upload-artifact@v3
+      with:
+        path: coverage.html
 
   lint:
     name: Lint
@@ -30,7 +35,7 @@ jobs:
         with:
           go-version: 'stable'
           cache: false
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
