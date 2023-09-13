@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/golang/glog"
+	"github.com/wangyoucao577/medialib/util"
 )
 
 // Handler represents AnnexB format Elementary Stream handler.
@@ -37,10 +38,15 @@ func (h *Handler) Parse() error {
 // Open opens Elementary Stream file.
 func (h *Handler) open() error {
 
-	var err error
-	if h.f, err = os.Open(h.filePath); err != nil {
-		return err
+	if h.filePath == util.InputStdin {
+		h.f = os.Stdin
+	} else {
+		var err error
+		if h.f, err = os.Open(h.filePath); err != nil {
+			return err
+		}
 	}
+
 	glog.V(1).Infof("open %s succeed.\n", h.filePath)
 
 	return nil
@@ -48,7 +54,7 @@ func (h *Handler) open() error {
 
 // Close closes the Elementary Stream file handler.
 func (h *Handler) close() error {
-	if h == nil || h.f == nil {
+	if h == nil || h.f == nil || h.f == os.Stdin {
 		return nil
 	}
 

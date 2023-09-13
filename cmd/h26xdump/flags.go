@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/wangyoucao577/medialib/util"
 	"github.com/wangyoucao577/medialib/util/dump"
 )
 
@@ -48,8 +49,7 @@ func getConentType() (dump.ContentType, error) {
 
 func init() {
 
-	flag.StringVar(&flags.inputFilePath, "i", "", `Input Elementary Stream file path, such as 'x.h264' or 'x.h265'.
-Be aware that the Elementary Stream file is mandatory stored by AnnexB byte stream format.`)
+	flag.StringVar(&flags.inputFilePath, "i", "", fmt.Sprintf("Input Elementary Stream file path, such as 'x.h264' or 'x.h265', '%s' if stdin. \nBe aware that the Elementary Stream file is mandatory stored by AnnexB byte stream format.", util.InputStdin))
 	flag.StringVar(&flags.content, "content", dump.ContentTypeES, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
 	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/wangyoucao577/medialib/util"
 	"github.com/wangyoucao577/medialib/util/dump"
 )
 
@@ -46,7 +47,7 @@ func getConentType() (dump.ContentType, error) {
 }
 
 func init() {
-	flag.StringVar(&flags.inputFilePath, "i", "", "Input flv file url.")
+	flag.StringVar(&flags.inputFilePath, "i", "", fmt.Sprintf("Input flv file url, '%s' if stdin", util.InputStdin))
 	flag.StringVar(&flags.content, "content", dump.ContentTypeRawAnnexBES, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
 	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")
 }

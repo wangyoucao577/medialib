@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/wangyoucao577/medialib/util"
 	"github.com/wangyoucao577/medialib/util/dump"
 )
 
@@ -50,7 +51,7 @@ func getConentType() (dump.ContentType, error) {
 }
 
 func init() {
-	flag.StringVar(&flags.inputFilePath, "i", "", `Input mp4/fmp4 file url.`)
+	flag.StringVar(&flags.inputFilePath, "i", "", fmt.Sprintf("Input mp4/fmp4 file url, '%s' if stdin", util.InputStdin))
 	flag.StringVar(&flags.content, "content", dump.ContentTypeBoxes, fmt.Sprintf("Contents to parse and output, available values: %s", supportedConentTypesHelper()))
 	flag.StringVar(&flags.format, "format", dump.FormatJSON, fmt.Sprintf("Output format, available values:%s", dump.FormatsHelper()))
 	flag.StringVar(&flags.outputFilePath, "o", "stdout", "Output file path.")

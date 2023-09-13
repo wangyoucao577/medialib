@@ -1,21 +1,28 @@
 package util
 
 import (
-	"errors"
-	"fmt"
 	"io"
+)
+
+const (
+	// use '-' to represent stdin as input
+	InputStdin = "-"
 )
 
 // ReadOrError reads a specifed amount of data, otherwise error.
 func ReadOrError(r io.Reader, data []byte) error {
 
 	l := len(data)
-	n, err := r.Read(data)
-	if err != nil {
-		return err
-	} else if n != l {
-		s := fmt.Sprintf("expect to read %d bytes but got %d bytes", l, n)
-		return errors.New(s)
+	readN := 0
+	for {
+		n, err := r.Read(data[readN:])
+		if err != nil {
+			return err
+		}
+		readN += n
+		if readN == l {
+			break
+		}
 	}
 
 	return nil
