@@ -17,14 +17,19 @@ jobs:
         go-version: 'stable'
         cache: false
     - uses: actions/checkout@v4
-    - name: Build & Test
+    - name: Build
       run: |
         go build -v ./...
+    - name: Test
+      run: |
         go test -coverprofile=c.out -v ./...
+    - name: Generate Code Coverage Report
+      run: |
         go tool cover -func=c.out
         go tool cover -html=c.out -o coverage.html
     - uses: actions/upload-artifact@v3
       with:
+        name: coverage
         path: coverage.html
 
   lint:
