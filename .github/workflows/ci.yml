@@ -17,13 +17,15 @@ jobs:
         go-version: 'stable'
         cache: false
     - uses: actions/checkout@v4
+
     - name: Build
       run: |
         go build -v ./...
-    - name: Test
+
+    - name: Unit Tests
       run: |
         go test -coverprofile=c.out -v ./...
-    - name: Generate Code Coverage Report
+    - name: Unit Tests Code Coverage Report
       run: |
         go tool cover -func=c.out
         go tool cover -html=c.out -o coverage.html
@@ -31,6 +33,24 @@ jobs:
       with:
         name: coverage
         path: coverage.html
+
+    - name: Build Integration Tests
+      run: |
+        mkdir -p build
+        go build -cover -o build ./cmd/*
+    - name: Intgration Tests Code Coverage
+      run: |
+        cd build
+        mkdir -p coverdata
+        export GOCOVERDIR=./coverdata
+        ./flvdump -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.flv -o /dev/null
+        ./flv2avc -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.flv -o flv.h264
+        ./mp4dump -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.mp4 -o /dev/null
+        ./mp42avc -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.mp4 -o mp4.h264
+        ./h26xdump -logtostderr -i flv.h264 -o /dev/null
+        ./h26xdump -logtostderr -i mp4.h264 -o /dev/null
+        go tool covdata percent -i ./coverdata
+        
 
   lint:
     name: Lint
