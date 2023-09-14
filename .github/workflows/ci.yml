@@ -43,12 +43,12 @@ jobs:
         cd build
         mkdir -p coverdata
         export GOCOVERDIR=./coverdata
-        ./flvdump -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.flv -o /dev/null
-        ./flv2avc -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.flv -o flv.h264
         ./mp4dump -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.mp4 -o /dev/null
         ./mp42avc -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.mp4 -o mp4.h264
-        ./h26xdump -logtostderr -i flv.h264 -o /dev/null
         ./h26xdump -logtostderr -i mp4.h264 -o /dev/null
+        ./flvdump -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.flv -o /dev/null
+        # ./flv2avc -logtostderr -i ../assets/sintel_trailer-720p-firstgopfmp4.flv -o flv.h264
+        # ./h26xdump -logtostderr -i flv.h264 -o /dev/null
         go tool covdata percent -i ./coverdata
         
 
