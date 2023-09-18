@@ -7,7 +7,7 @@ import (
 
 // output pre-defined
 const (
-	OutputStdout = "stdout"
+	OutputStdout = "" // represents stdout by ""
 )
 
 // CreateOutput creates output writer if needed, return os.Stdout for 'stdout'.
