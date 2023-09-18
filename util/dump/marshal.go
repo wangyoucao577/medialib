@@ -24,11 +24,13 @@ type Marshaler interface {
 // Marshal marshals data by format.
 func Marshal(m Marshaler, f Format) ([]byte, error) {
 	switch f {
+	case FormatYML:
+		fallthrough
 	case FormatYAML:
 		return m.YAML()
 	case FormatJSON:
 		return m.JSON()
-	case FormatJSONNewLines:
+	case FormatJSONFormatted:
 		return m.JSONIndent("", "\t")
 	case FormatCSV:
 		return m.CSV()

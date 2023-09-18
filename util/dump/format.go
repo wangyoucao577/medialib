@@ -7,17 +7,19 @@ type Format string
 
 // supported marshal formats
 const (
-	FormatJSON         = "json"
-	FormatJSONNewLines = "json_newlines"
-	FormatYAML         = "yaml"
-	FormatCSV          = "csv"
+	FormatJSON          = "json"
+	FormatJSONFormatted = "json_formatted"
+	FormatYAML          = "yaml"
+	FormatYML           = "yml"
+	FormatCSV           = "csv"
 )
 
 var supportedFormats = map[Format]struct{}{
-	FormatJSON:         {},
-	FormatJSONNewLines: {},
-	FormatYAML:         {},
-	FormatCSV:          {},
+	FormatJSON:          {},
+	FormatJSONFormatted: {},
+	FormatYAML:          {},
+	FormatYML:           {},
+	FormatCSV:           {},
 }
 
 // String implements Stringer.
