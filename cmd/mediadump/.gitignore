@@ -1,0 +1,10 @@
+
+mediadump
+*.json
+*.yaml
+*.yml
+*.csv
+*.log
+*.h264
+*.flv
+*.mp4
