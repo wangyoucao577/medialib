@@ -15,8 +15,8 @@ type Handler struct {
 	filePath string
 }
 
-// NewHandler creates FLV Handler.
-func NewHandler(filePath string) *Handler {
+// New creates FLV Handler.
+func New(filePath string) *Handler {
 	return &Handler{
 		filePath: filePath,
 	}

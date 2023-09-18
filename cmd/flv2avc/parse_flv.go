@@ -12,7 +12,7 @@ import (
 func parseFLV(inputFile string, contentType dump.ContentType, output string) error {
 
 	// parse
-	h := flv.NewHandler(flags.inputFilePath)
+	h := flv.New(flags.inputFilePath)
 	if err := h.Parse(); err != nil {
 		if err != io.EOF {
 			glog.Warningf("Parse FLV failed but ignore to leverage the data has been parsed already, err %v", err)

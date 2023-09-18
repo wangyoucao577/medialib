@@ -15,8 +15,8 @@ type Handler struct {
 	filePath string
 }
 
-// NewHandler creates Elementary Stream Handler.
-func NewHandler(filePath string) *Handler {
+// New creates Elementary Stream Handler.
+func New(filePath string) *Handler {
 	return &Handler{
 		filePath: filePath,
 	}

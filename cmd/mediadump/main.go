@@ -79,7 +79,7 @@ func parseInput(inputFilePath string, parseES bool) (dump.Marshaler, error) {
 		return es, nil
 
 	} else if strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.FLV)) {
-		h := flv.NewHandler(inputFilePath)
+		h := flv.New(inputFilePath)
 		if err := h.Parse(); err != nil {
 			if err != io.EOF {
 				glog.Warningf("Parse FLV failed but ignore to leverage the data has been parsed already, err %v", err)
@@ -97,7 +97,7 @@ func parseInput(inputFilePath string, parseES bool) (dump.Marshaler, error) {
 		return es, nil
 
 	} else if strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.H264)) {
-		h := annexbes.NewHandler(inputFilePath)
+		h := annexbes.New(inputFilePath)
 		if err := h.Parse(); err != nil {
 			if err != io.EOF {
 				glog.Warningf("Parse ES failed but ignore to leverage the data has been parsed already, err %v", err)
