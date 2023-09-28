@@ -52,7 +52,7 @@ func (b Box) MarshalJSON() ([]byte, error) {
 		ModificationTime time.Time `json:"modification_time"`
 		TrackID          uint32    `json:"track_id"`
 		Duration         uint64    `json:"duration"`
-		// DurationMilliSeconds uint64    `json:"duration_ms"`
+		// DurationMilliSeconds float64    `json:"duration_ms"`
 
 		Layer            int16 `json:"layer"`
 		AlternativeGroup int16 `json:"alternative_group"`
@@ -68,7 +68,7 @@ func (b Box) MarshalJSON() ([]byte, error) {
 		ModificationTime: time1904.Unix(int64(b.ModificationTime), 0).UTC(),
 		TrackID:          b.TrackID,
 		Duration:         b.Duration,
-		// DurationMilliSeconds: uint64(float64(b.Duration) * 1000 / float64(b.Timescale)),
+		// DurationMilliSeconds: float64(b.Duration) * 1000 / float64(b.Timescale),
 
 		Layer:            b.Layer,
 		AlternativeGroup: b.AlternativeGroup,

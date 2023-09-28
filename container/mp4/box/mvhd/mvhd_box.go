@@ -49,7 +49,7 @@ func (b Box) MarshalJSON() ([]byte, error) {
 		ModificationTime     time.Time `json:"modification_time"`
 		Timescale            uint32    `json:"timescale"`
 		Duration             uint64    `json:"duration"`
-		DurationMilliSeconds uint64    `json:"duration_ms"`
+		DurationMilliSeconds float64   `json:"duration_ms"`
 
 		Rate        int32     `json:"rate"`
 		Volume      int16     `json:"volume"`
@@ -63,7 +63,7 @@ func (b Box) MarshalJSON() ([]byte, error) {
 		ModificationTime:     time1904.Unix(int64(b.ModificationTime), 0).UTC(),
 		Timescale:            b.Timescale,
 		Duration:             b.Duration,
-		DurationMilliSeconds: uint64(float64(b.Duration) * 1000 / float64(b.Timescale)),
+		DurationMilliSeconds: float64(b.Duration) * 1000 / float64(b.Timescale),
 
 		Rate:        b.Rate,
 		Volume:      b.Volume,

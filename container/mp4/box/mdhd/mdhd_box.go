@@ -50,7 +50,7 @@ func (b Box) MarshalJSON() ([]byte, error) {
 		ModificationTime     time.Time `json:"modification_time"`
 		Timescale            uint32    `json:"timescale"`
 		Duration             uint64    `json:"duration"`
-		DurationMilliSeconds uint64    `json:"duration_ms"`
+		DurationMilliSeconds float64   `json:"duration_ms"`
 
 		Pad        uint8  `json:"pad"`      // 1 bit
 		Language   string `json:"language"` // 5 bytes per uint
@@ -62,7 +62,7 @@ func (b Box) MarshalJSON() ([]byte, error) {
 		ModificationTime:     time1904.Unix(int64(b.ModificationTime), 0).UTC(),
 		Timescale:            b.Timescale,
 		Duration:             b.Duration,
-		DurationMilliSeconds: uint64(float64(b.Duration) * 1000 / float64(b.Timescale)),
+		DurationMilliSeconds: float64(b.Duration) * 1000 / float64(b.Timescale),
 
 		Pad:        b.Pad,
 		Language:   string(b.Language[:]),
