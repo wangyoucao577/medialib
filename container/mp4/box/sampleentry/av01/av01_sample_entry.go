@@ -9,6 +9,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry"
 	av1c "github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/av1C"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/btrt"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/pasp"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/vide"
 )
 
@@ -18,6 +19,7 @@ type AV1SampleEntry struct {
 
 	AV1Config *av1c.AV1ConfigrationBox `json:"av1C"`
 	Btrt      *btrt.Box                `json:"btrt,omitempty"`
+	Pasp      *pasp.Box                `json:"pasp,omitempty"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -34,6 +36,7 @@ func New(h box.Header) box.Box {
 		boxesCreator: map[string]box.NewFunc{
 			box.TypeAv1C: av1c.New,
 			box.TypeBtrt: btrt.New,
+			box.TypePasp: pasp.New,
 		},
 	}
 }
@@ -56,6 +59,8 @@ func (a *AV1SampleEntry) CreateSubBox(h box.Header) (box.Box, error) {
 		a.AV1Config = createdBox.(*av1c.AV1ConfigrationBox)
 	case box.TypeBtrt:
 		a.Btrt = createdBox.(*btrt.Box)
+	case box.TypePasp:
+		a.Pasp = createdBox.(*pasp.Box)
 	}
 
 	return createdBox, nil

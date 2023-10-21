@@ -75,6 +75,7 @@ const (
 	TypeBtrt = "btrt"
 	TypeMp4a = "mp4a"
 	TypeEsds = "esds"
+	TypePasp = "pasp"
 )
 
 var boxTypes = map[string]BasicInfo{
@@ -137,6 +138,7 @@ var boxTypes = map[string]BasicInfo{
 	TypeBtrt: {Name: "MPEG4 Bit Rate Box"},
 	TypeMp4a: {Name: "MP4 Visual Sample Entry"},
 	TypeEsds: {Name: "ES Descriptor Box"},
+	TypePasp: {Name: "Pixel Aspect Ratio Box"},
 }
 
 // BoxTypes returns box types map.
