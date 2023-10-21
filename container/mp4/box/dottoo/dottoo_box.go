@@ -1,22 +1,19 @@
-// Package ilst represents ilst type box.
-// https://developer.apple.com/documentation/quicktime-file-format/metadata_item_list_atom
-package ilst
+// Package dottoo represents .too box which contians encoding tool information.
+package dottoo
 
 import (
 	"io"
 
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/container/mp4/box"
-	"github.com/wangyoucao577/medialib/container/mp4/box/desc"
-	"github.com/wangyoucao577/medialib/container/mp4/box/dottoo"
+	"github.com/wangyoucao577/medialib/container/mp4/box/data"
 )
 
-// Box represents a ilst box.
+// Box represents a dinf box.
 type Box struct {
 	box.Header `json:"header"`
 
-	EncodingTool *dottoo.Box `json:"encoding_tool,omitempty"`
-	Desc         *desc.Box   `json:"desc,omitempty"`
+	Data *data.Box `json:"data"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -27,8 +24,7 @@ func New(h box.Header) box.Box {
 		Header: h,
 
 		boxesCreator: map[string]box.NewFunc{
-			box.TypeDottoo: dottoo.New,
-			box.TypeDesc:   desc.New,
+			box.TypeData: data.New,
 		},
 	}
 }
@@ -47,10 +43,8 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 	}
 
 	switch h.Type.String() {
-	case box.TypeDottoo:
-		b.EncodingTool = createdBox.(*dottoo.Box)
-	case box.TypeDesc:
-		b.Desc = createdBox.(*desc.Box)
+	case box.TypeData:
+		b.Data = createdBox.(*data.Box)
 	}
 
 	return createdBox, nil

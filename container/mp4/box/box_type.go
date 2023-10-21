@@ -17,48 +17,51 @@ type BasicInfo struct {
 const (
 	TypeUUID = "uuid"
 
-	TypeFtyp = "ftyp"
-	TypeFree = "free"
-	TypeSkip = "skip"
-	TypeMdat = "mdat"
-	TypeMoov = "moov"
-	TypeMvhd = "mvhd"
-	TypeUdta = "udta"
-	TypeCprt = "cprt"
-	TypeMeta = "meta"
-	TypeHdlr = "hdlr"
-	TypeIlst = "ilst"
-	TypeTrak = "trak"
-	TypeTkhd = "tkhd"
-	TypeMdia = "mdia"
-	TypeMdhd = "mdhd"
-	TypeMinf = "minf"
-	TypeStbl = "stbl"
-	TypeDinf = "dinf"
-	TypeSmhd = "smhd"
-	TypeVmhd = "vmhd"
-	TypeStsd = "stsd"
-	TypeStts = "stts"
-	TypeStss = "stss"
-	TypeStsc = "stsc"
-	TypeStsz = "stsz"
-	TypeStco = "stco"
-	TypeCtts = "ctts"
-	TypeDref = "dref"
-	TypeUrl  = "url "
-	TypeUrn  = "urn"
-	TypeMoof = "moof"
-	TypeMfhd = "mfhd"
-	TypeTraf = "traf"
-	TypeTfhd = "tfhd"
-	TypeTrun = "trun"
-	TypeTfdt = "tfdt"
-	TypeMvex = "mvex"
-	TypeMehd = "mehd"
-	TypeTrex = "trex"
-	TypeEdts = "edts"
-	TypeElst = "elst"
-	TypeSidx = "sidx"
+	TypeFtyp   = "ftyp"
+	TypeFree   = "free"
+	TypeSkip   = "skip"
+	TypeMdat   = "mdat"
+	TypeMoov   = "moov"
+	TypeMvhd   = "mvhd"
+	TypeUdta   = "udta"
+	TypeCprt   = "cprt"
+	TypeMeta   = "meta"
+	TypeHdlr   = "hdlr"
+	TypeIlst   = "ilst"
+	TypeTrak   = "trak"
+	TypeTkhd   = "tkhd"
+	TypeMdia   = "mdia"
+	TypeMdhd   = "mdhd"
+	TypeMinf   = "minf"
+	TypeStbl   = "stbl"
+	TypeDinf   = "dinf"
+	TypeSmhd   = "smhd"
+	TypeVmhd   = "vmhd"
+	TypeStsd   = "stsd"
+	TypeStts   = "stts"
+	TypeStss   = "stss"
+	TypeStsc   = "stsc"
+	TypeStsz   = "stsz"
+	TypeStco   = "stco"
+	TypeCtts   = "ctts"
+	TypeDref   = "dref"
+	TypeUrl    = "url "
+	TypeUrn    = "urn"
+	TypeMoof   = "moof"
+	TypeMfhd   = "mfhd"
+	TypeTraf   = "traf"
+	TypeTfhd   = "tfhd"
+	TypeTrun   = "trun"
+	TypeTfdt   = "tfdt"
+	TypeMvex   = "mvex"
+	TypeMehd   = "mehd"
+	TypeTrex   = "trex"
+	TypeEdts   = "edts"
+	TypeElst   = "elst"
+	TypeSidx   = "sidx"
+	TypeData   = "data"
+	TypeDottoo = "\251too"
+	TypeDesc   = "desc"
 
 	// sample entry
 	TypeVide = "vide"
@@ -77,48 +80,51 @@ const (
 var boxTypes = map[string]BasicInfo{
 	TypeUUID: {Name: "UUID"},
 
-	TypeFtyp: {Name: "File Type Box"},
-	TypeFree: {Name: "Free Space Box"},
-	TypeSkip: {Name: "Free Space Box"},
-	TypeMdat: {Name: "Media Data Box"},
-	TypeMoov: {Name: "Movie Box"},
-	TypeMvhd: {Name: "Movie Header Box"},
-	TypeUdta: {Name: "User Data Box"},
-	TypeCprt: {Name: "Copyright Box"},
-	TypeMeta: {Name: "Meta Box"},
-	TypeHdlr: {Name: "Handler Reference Box"},
-	TypeIlst: {Name: "unknown"},
-	TypeTrak: {Name: "Track Reference Box"},
-	TypeTkhd: {Name: "Track Header Box"},
-	TypeMdia: {Name: "Media Box"},
-	TypeMdhd: {Name: "Media Header Box"},
-	TypeMinf: {Name: "Media Information Box"},
-	TypeStbl: {Name: "Sample Table Box"},
-	TypeDinf: {Name: "Data Information Box"},
-	TypeSmhd: {Name: "Sound Media Header"},
-	TypeVmhd: {Name: "Video Media Header"},
-	TypeStsd: {Name: "Sample Description Box"},
-	TypeStts: {Name: "Decoding Time to Sample Box"},
-	TypeStss: {Name: "Sync Sample Box"},
-	TypeStsc: {Name: "Sample To Chunk Box"},
-	TypeStsz: {Name: "Sample Size Box"},
-	TypeStco: {Name: "Chunk Offset Box"},
-	TypeCtts: {Name: "Composition Time to Sample Box"},
-	TypeDref: {Name: "Data Reference Box"},
-	TypeUrl:  {Name: "Data Entry Url Box"},
-	TypeUrn:  {Name: "Data Entry Urn Box"},
-	TypeMoof: {Name: "Movie Fragment Box"},
-	TypeMfhd: {Name: "Movie Fragment Header Box"},
-	TypeTraf: {Name: "Track Fragment Box"},
-	TypeTfhd: {Name: "Track Fragment Header Box"},
-	TypeTrun: {Name: "Track Fragment Run Box"},
-	TypeTfdt: {Name: "Track Fragment Base Media Decode Time Box"},
-	TypeMvex: {Name: "Movie Extends Box"},
-	TypeMehd: {Name: "Movie Extends Header Box"},
-	TypeTrex: {Name: "Track Extends Box"},
-	TypeEdts: {Name: "Edit Box"},
-	TypeElst: {Name: "Edit List Box"},
-	TypeSidx: {Name: "Segment Index Box"},
+	TypeFtyp:   {Name: "File Type Box"},
+	TypeFree:   {Name: "Free Space Box"},
+	TypeSkip:   {Name: "Free Space Box"},
+	TypeMdat:   {Name: "Media Data Box"},
+	TypeMoov:   {Name: "Movie Box"},
+	TypeMvhd:   {Name: "Movie Header Box"},
+	TypeUdta:   {Name: "User Data Box"},
+	TypeCprt:   {Name: "Copyright Box"},
+	TypeMeta:   {Name: "Meta Box"},
+	TypeHdlr:   {Name: "Handler Reference Box"},
+	TypeIlst:   {Name: "unknown"},
+	TypeTrak:   {Name: "Track Reference Box"},
+	TypeTkhd:   {Name: "Track Header Box"},
+	TypeMdia:   {Name: "Media Box"},
+	TypeMdhd:   {Name: "Media Header Box"},
+	TypeMinf:   {Name: "Media Information Box"},
+	TypeStbl:   {Name: "Sample Table Box"},
+	TypeDinf:   {Name: "Data Information Box"},
+	TypeSmhd:   {Name: "Sound Media Header"},
+	TypeVmhd:   {Name: "Video Media Header"},
+	TypeStsd:   {Name: "Sample Description Box"},
+	TypeStts:   {Name: "Decoding Time to Sample Box"},
+	TypeStss:   {Name: "Sync Sample Box"},
+	TypeStsc:   {Name: "Sample To Chunk Box"},
+	TypeStsz:   {Name: "Sample Size Box"},
+	TypeStco:   {Name: "Chunk Offset Box"},
+	TypeCtts:   {Name: "Composition Time to Sample Box"},
+	TypeDref:   {Name: "Data Reference Box"},
+	TypeUrl:    {Name: "Data Entry Url Box"},
+	TypeUrn:    {Name: "Data Entry Urn Box"},
+	TypeMoof:   {Name: "Movie Fragment Box"},
+	TypeMfhd:   {Name: "Movie Fragment Header Box"},
+	TypeTraf:   {Name: "Track Fragment Box"},
+	TypeTfhd:   {Name: "Track Fragment Header Box"},
+	TypeTrun:   {Name: "Track Fragment Run Box"},
+	TypeTfdt:   {Name: "Track Fragment Base Media Decode Time Box"},
+	TypeMvex:   {Name: "Movie Extends Box"},
+	TypeMehd:   {Name: "Movie Extends Header Box"},
+	TypeTrex:   {Name: "Track Extends Box"},
+	TypeEdts:   {Name: "Edit Box"},
+	TypeElst:   {Name: "Edit List Box"},
+	TypeSidx:   {Name: "Segment Index Box"},
+	TypeData:   {Name: "Data Box (Quicktime file format defined)"},
+	TypeDottoo: {Name: "Encoding tool information box"},
+	TypeDesc:   {Name: "Description Box"},
 
 	TypeVide: {Name: "Visual Sample Entry"},
 	TypeSoun: {Name: "Audio Sample Entry"},
