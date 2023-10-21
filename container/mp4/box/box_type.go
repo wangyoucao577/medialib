@@ -65,6 +65,8 @@ const (
 	TypeSoun = "soun"
 	TypeAvc1 = "avc1"
 	TypeAvcC = "avcC"
+	TypeHev1 = "hev1"
+	TypehvcC = "hvcC"
 	TypeAv01 = "av01"
 	TypeAv1C = "av1C"
 	TypeBtrt = "btrt"
@@ -122,6 +124,8 @@ var boxTypes = map[string]BasicInfo{
 	TypeSoun: {Name: "Audio Sample Entry"},
 	TypeAvc1: {Name: "AVC Sample Entry"},
 	TypeAvcC: {Name: "AVC Configuration Box"},
+	TypeHev1: {Name: "HEVC Sample Entry"},
+	TypehvcC: {Name: "HEVC Configuration Box"},
 	TypeAv01: {Name: "AV1 Sample Entry"},
 	TypeAv1C: {Name: "AV1 Configuration Box"},
 	TypeBtrt: {Name: "MPEG4 Bit Rate Box"},
