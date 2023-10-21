@@ -32,16 +32,12 @@ func (b *Box) ParsePayload(r io.Reader) error {
 		return nil
 	}
 
-	// start to parse payload
-	var parsedBytes uint64
-
 	data := make([]byte, 8)
 	if err := util.ReadOrError(r, data); err != nil {
 		return err
 	} else {
 		b.HSpacing = binary.BigEndian.Uint32(data[:4])
 		b.VSpacing = binary.BigEndian.Uint32(data[4:])
-		parsedBytes += 8
 	}
 
 	return nil
