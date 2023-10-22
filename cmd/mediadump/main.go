@@ -14,7 +14,8 @@ import (
 	"github.com/wangyoucao577/medialib/util/exit"
 	"github.com/wangyoucao577/medialib/util/mediaformat"
 	"github.com/wangyoucao577/medialib/video/avc/annexbes"
-	"github.com/wangyoucao577/medialib/video/avc/nalu"
+	avcnalu "github.com/wangyoucao577/medialib/video/avc/nalu"
+	hevcnalu "github.com/wangyoucao577/medialib/video/hevc/nalu"
 )
 
 func main() {
@@ -35,8 +36,10 @@ func main() {
 	var data dump.Marshaler
 	if flags.dumpBoxTypes {
 		data = box.TypesMarshaler{}
-	} else if flags.dumpNALUTypes {
-		data = nalu.TypesMarshaler{}
+	} else if flags.dumpAVCNALUTypes {
+		data = avcnalu.TypesMarshaler{}
+	} else if flags.dumpHEVCNALUTypes {
+		data = hevcnalu.TypesMarshaler{}
 	} else {
 		if m, err := parseInput(flags.inputFilePath, flags.parseES); err != nil {
 			glog.Error(err)

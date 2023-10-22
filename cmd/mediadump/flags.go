@@ -15,8 +15,9 @@ var flags struct {
 
 	parseES bool // parse and dump es layer rather than container layer
 
-	dumpBoxTypes  bool
-	dumpNALUTypes bool
+	dumpBoxTypes      bool
+	dumpAVCNALUTypes  bool
+	dumpHEVCNALUTypes bool
 }
 
 func init() {
@@ -27,7 +28,9 @@ func init() {
 	flag.BoolVar(&flags.parseES, "parse_es", false, "parse and dump Elementry Stream layer rather than container layer")
 
 	flag.BoolVar(&flags.dumpBoxTypes, "box_types", false, "dump supported mp4 box types")
-	flag.BoolVar(&flags.dumpNALUTypes, "nalu_types", false, "dump supported NALU types")
+	flag.BoolVar(&flags.dumpAVCNALUTypes, "avc_nalu_types", false, "dump AVC supported NALU types")
+	flag.BoolVar(&flags.dumpHEVCNALUTypes, "hevc_nalu_types", false, "dump HEVC supported NALU types")
+
 }
 
 func validateFlags() error {
@@ -36,7 +39,7 @@ func validateFlags() error {
 		return err
 	}
 
-	if !flags.dumpBoxTypes && !flags.dumpNALUTypes && len(flags.inputFilePath) == 0 {
+	if !flags.dumpBoxTypes && !flags.dumpAVCNALUTypes && !flags.dumpHEVCNALUTypes && len(flags.inputFilePath) == 0 {
 		return fmt.Errorf("input file is mandantory")
 	}
 
