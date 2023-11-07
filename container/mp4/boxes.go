@@ -15,6 +15,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box/moof"
 	"github.com/wangyoucao577/medialib/container/mp4/box/moov"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sidx"
+	"github.com/wangyoucao577/medialib/util"
 	"github.com/wangyoucao577/medialib/video/avc/annexbes"
 	"github.com/wangyoucao577/medialib/video/avc/es"
 )
@@ -214,4 +215,98 @@ func (b *Boxes) ExtractAnnexBES(trackID int) (*annexbes.ElementaryStream, error)
 	}
 
 	return &annexbES, nil
+}
+
+// DumpDurations dumps duration information.
+func (b *Boxes) DumpDurations() {
+
+	type trackInfo struct {
+		// from moov
+		trackID   uint32
+		trackType string
+		timescale uint64
+
+		// from fragments
+		duration    uint64
+		sampleCount uint64
+	}
+	tracksInfo := map[uint32]*trackInfo{}
+
+	if b.Moov != nil && b.Moov.Mvhd != nil { // moov
+		mvhdTimescale := b.Moov.Mvhd.Timescale
+		mvhdDuration := b.Moov.Mvhd.Duration
+		glog.Infof("movie (mvhd) timescale %d duration %d(%fs)", mvhdTimescale, mvhdDuration, util.DurationInSeconds(mvhdDuration, uint64(mvhdTimescale)))
+
+		for _, track := range b.Moov.Trak {
+			if track.Tkhd == nil {
+				continue
+			}
+			trackID := track.Tkhd.TrackID
+
+			trackType := "unknown"
+			if track.Mdia != nil && track.Mdia.Hdlr != nil {
+				switch track.Mdia.Hdlr.HandlerType.String() {
+				case "vide":
+					trackType = "video"
+				case "soun":
+					trackType = "audio"
+				}
+			}
+
+			tkhdDuration := track.Tkhd.Duration
+			glog.Infof("  track %d %s (tkhd) duration %d (%fs)", trackID, trackType, tkhdDuration, util.DurationInSeconds(tkhdDuration, uint64(mvhdTimescale)))
+
+			var mdhdTimescale uint32
+			if track.Mdia != nil && track.Mdia.Mdhd != nil {
+				mdhdTimescale = track.Mdia.Mdhd.Timescale
+				mdhdDuration := track.Mdia.Mdhd.Duration
+				glog.Infof("  track %d %s (mdhd) timescale %d duration %d (%fs)", trackID, trackType, mdhdTimescale, mdhdDuration, util.DurationInSeconds(mdhdDuration, uint64(mdhdTimescale)))
+			}
+
+			tracksInfo[trackID] = &trackInfo{trackID: trackID, trackType: trackType, timescale: uint64(mdhdTimescale)}
+		}
+	}
+
+	if len(b.MoofMdat) == 0 {
+		return
+	}
+
+	for _, moofMdat := range b.MoofMdat { // fragments
+		for _, moofTraf := range moofMdat.Moof.Traf {
+			if moofTraf.Tfhd == nil {
+				continue
+			}
+			trackID := moofTraf.Tfhd.TrackID
+
+			if _, ok := tracksInfo[trackID]; !ok { // set default track info if no header
+				tracksInfo[trackID] = &trackInfo{
+					trackID, "unknown", 0, 0, 0,
+				}
+			}
+			currInfo := tracksInfo[trackID]
+
+			var defaultSampleDuration uint32
+			if moofTraf.Tfhd.FullHeader.Flags&0x000008 > 0 { // default sample duration found
+				defaultSampleDuration = moofTraf.Tfhd.DefaultSampleDuration
+			}
+
+			for _, trun := range moofTraf.Trun {
+				currInfo.sampleCount += uint64(trun.SampleCount)
+
+				if trun.Flags&0x100 > 0 { // sample‐duration‐present, indicates that each sample has its own duration
+					for _, d := range trun.SampleDuration {
+						currInfo.duration += uint64(d)
+					}
+					glog.V(2).Infof("    track %d %s use sample durations for sample count %d", trackID, tracksInfo[trackID].trackType, trun.SampleCount)
+				} else { // otherwise the default is used (default‐sample‐duration‐present)
+					glog.V(2).Infof("    track %d %s use default sample duration %d for sample count %d", trackID, tracksInfo[trackID].trackType, defaultSampleDuration, trun.SampleCount)
+					currInfo.duration += uint64(defaultSampleDuration * trun.SampleCount)
+				}
+			}
+		}
+	}
+
+	for _, v := range tracksInfo {
+		glog.Infof("  track %d %s (tfhd/trun) sample_count %d duration %d (%fs)", v.trackID, v.trackType, v.sampleCount, v.duration, util.DurationInSeconds(v.duration, v.timescale))
+	}
 }

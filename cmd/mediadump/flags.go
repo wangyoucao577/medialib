@@ -18,6 +18,8 @@ var flags struct {
 	dumpBoxTypes      bool
 	dumpAVCNALUTypes  bool
 	dumpHEVCNALUTypes bool
+
+	printDurations bool
 }
 
 func init() {
@@ -31,6 +33,7 @@ func init() {
 	flag.BoolVar(&flags.dumpAVCNALUTypes, "avc_nalu_types", false, "dump AVC supported NALU types")
 	flag.BoolVar(&flags.dumpHEVCNALUTypes, "hevc_nalu_types", false, "dump HEVC supported NALU types")
 
+	flag.BoolVar(&flags.printDurations, "print_durations", false, "print fragment-mp4 detailed durations")
 }
 
 func validateFlags() error {

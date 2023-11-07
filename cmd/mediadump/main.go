@@ -41,7 +41,7 @@ func main() {
 	} else if flags.dumpHEVCNALUTypes {
 		data = hevcnalu.TypesMarshaler{}
 	} else {
-		if m, err := parseInput(flags.inputFilePath, flags.parseES); err != nil {
+		if m, err := parseInput(flags.inputFilePath, flags.parseES, flags.printDurations); err != nil {
 			glog.Error(err)
 			exit.Fail()
 		} else {
@@ -58,7 +58,7 @@ func main() {
 
 }
 
-func parseInput(inputFilePath string, parseES bool) (dump.Marshaler, error) {
+func parseInput(inputFilePath string, parseES bool, printDuration bool) (dump.Marshaler, error) {
 
 	if strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.MP4)) ||
 		strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.FMP4)) ||
@@ -69,6 +69,10 @@ func parseInput(inputFilePath string, parseES bool) (dump.Marshaler, error) {
 				glog.Warningf("Parse mp4 failed but ignore to leverage the data has been parsed already, err %v", err)
 				// exit.Fail()	// ignore the error so that able to leverage the data has been parsed already
 			}
+		}
+
+		if printDuration {
+			m.DumpDurations()
 		}
 
 		if !parseES {
