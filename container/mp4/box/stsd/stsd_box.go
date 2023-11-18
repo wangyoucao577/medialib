@@ -23,6 +23,7 @@ type Box struct {
 	EntryCount             uint32                      `json:"entry_connt"`
 	AVC1SampleEntries      []avc1.AVCSampleEntry       `json:"avc1,omitempty"`
 	HEV1SampleEntries      []hev1.HEVCSampleEntry      `json:"hev1,omitempty"`
+	HVC1SampleEntries      []hev1.HEVCSampleEntry      `json:"hvc1,omitempty"`
 	AV01SampleEntries      []av01.AV1SampleEntry       `json:"av01,omitempty"`
 	MP4VisualSampleEntries []mp4a.MP4VisualSampleEntry `json:"mp4a,omitempty"`
 
@@ -42,6 +43,7 @@ func New(h box.Header) box.Box {
 		boxesCreator: map[string]box.NewFunc{
 			box.TypeAvc1: avc1.New,
 			box.TypeHev1: hev1.New,
+			box.TypeHvc1: hev1.New,
 			box.TypeAv01: av01.New,
 			box.TypeMp4a: mp4a.New,
 		},
@@ -70,6 +72,9 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		case box.TypeHev1:
 			b.HEV1SampleEntries = append(b.HEV1SampleEntries, *createdBox.(*hev1.HEVCSampleEntry))
 			createdBox = &b.HEV1SampleEntries[len(b.HEV1SampleEntries)-1]
+		case box.TypeHvc1:
+			b.HVC1SampleEntries = append(b.HVC1SampleEntries, *createdBox.(*hev1.HEVCSampleEntry))
+			createdBox = &b.HVC1SampleEntries[len(b.HVC1SampleEntries)-1]
 		case box.TypeAv01:
 			b.AV01SampleEntries = append(b.AV01SampleEntries, *createdBox.(*av01.AV1SampleEntry))
 			createdBox = &b.AV01SampleEntries[len(b.AV01SampleEntries)-1]

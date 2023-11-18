@@ -8,6 +8,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/container/mp4/box/ctts"
 	"github.com/wangyoucao577/medialib/container/mp4/box/hdlr"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sdtp"
 	"github.com/wangyoucao577/medialib/container/mp4/box/stco"
 	"github.com/wangyoucao577/medialib/container/mp4/box/stsc"
 	"github.com/wangyoucao577/medialib/container/mp4/box/stsd"
@@ -27,6 +28,7 @@ type Box struct {
 	Stsz *stsz.Box `json:"stsz,omitempty"`
 	Stco *stco.Box `json:"stco,omitempty"`
 	Ctts *ctts.Box `json:"ctts,omitempty"`
+	Sdtp *sdtp.Box `json:"sdtp,omitempty"`
 
 	// passed from parent for later use
 	hdlr *hdlr.Box `json:"-"`
@@ -52,6 +54,7 @@ func New(h box.Header) box.Box {
 			box.TypeStsz: stsz.New,
 			box.TypeStco: stco.New,
 			box.TypeCtts: ctts.New,
+			box.TypeSdtp: sdtp.New,
 		},
 	}
 }
@@ -87,6 +90,8 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		b.Stco = createdBox.(*stco.Box)
 	case box.TypeCtts:
 		b.Ctts = createdBox.(*ctts.Box)
+	case box.TypeSdtp:
+		b.Sdtp = createdBox.(*sdtp.Box)
 	}
 
 	return createdBox, nil

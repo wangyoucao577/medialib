@@ -44,6 +44,7 @@ const (
 	TypeStsz   = "stsz"
 	TypeStco   = "stco"
 	TypeCtts   = "ctts"
+	TypeSdtp   = "sdtp"
 	TypeDref   = "dref"
 	TypeUrl    = "url "
 	TypeUrn    = "urn"
@@ -69,6 +70,7 @@ const (
 	TypeAvc1 = "avc1"
 	TypeAvcC = "avcC"
 	TypeHev1 = "hev1"
+	TypeHvc1 = "hvc1"
 	TypehvcC = "hvcC"
 	TypeAv01 = "av01"
 	TypeAv1C = "av1C"
@@ -108,6 +110,7 @@ var boxTypes = map[string]BasicInfo{
 	TypeStsz:   {Name: "Sample Size Box"},
 	TypeStco:   {Name: "Chunk Offset Box"},
 	TypeCtts:   {Name: "Composition Time to Sample Box"},
+	TypeSdtp:   {Name: "Independent and Disposable Samples Box"},
 	TypeDref:   {Name: "Data Reference Box"},
 	TypeUrl:    {Name: "Data Entry Url Box"},
 	TypeUrn:    {Name: "Data Entry Urn Box"},
@@ -132,6 +135,7 @@ var boxTypes = map[string]BasicInfo{
 	TypeAvc1: {Name: "AVC Sample Entry"},
 	TypeAvcC: {Name: "AVC Configuration Box"},
 	TypeHev1: {Name: "HEVC Sample Entry"},
+	TypeHvc1: {Name: "HEVC Sample Entry"},
 	TypehvcC: {Name: "HEVC Configuration Box"},
 	TypeAv01: {Name: "AV1 Sample Entry"},
 	TypeAv1C: {Name: "AV1 Configuration Box"},
