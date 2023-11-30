@@ -5,6 +5,7 @@ const (
 	MP4  = "mp4"
 	M4S  = "m4s"
 	FMP4 = "fmp4"
+	MOV  = "mov"
 
 	FLV = "flv"
 

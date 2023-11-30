@@ -62,7 +62,8 @@ func parseInput(inputFilePath string, parseES bool, printDuration bool) (dump.Ma
 
 	if strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.MP4)) ||
 		strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.FMP4)) ||
-		strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.M4S)) {
+		strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.M4S)) ||
+		strings.HasSuffix(inputFilePath, mediaformat.AsExtension(mediaformat.MOV)) {
 		m := mp4.New(inputFilePath)
 		if err := m.Parse(); err != nil {
 			if err != io.EOF {
