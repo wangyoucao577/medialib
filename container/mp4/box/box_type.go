@@ -71,13 +71,18 @@ const (
 	TypeAvcC = "avcC"
 	TypeHev1 = "hev1"
 	TypeHvc1 = "hvc1"
-	TypehvcC = "hvcC"
+	TypeHvcC = "hvcC"
+	TypeLhvC = "lhvC"
 	TypeAv01 = "av01"
 	TypeAv1C = "av1C"
 	TypeBtrt = "btrt"
 	TypeMp4a = "mp4a"
 	TypeEsds = "esds"
 	TypePasp = "pasp"
+	TypeVexu = "vexu"
+	TypeColr = "colr"
+	TypeHfov = "hfov"
+	TypeSgpd = "sgpd"
 )
 
 var boxTypes = map[string]BasicInfo{
@@ -136,13 +141,18 @@ var boxTypes = map[string]BasicInfo{
 	TypeAvcC: {Name: "AVC Configuration Box"},
 	TypeHev1: {Name: "HEVC Sample Entry"},
 	TypeHvc1: {Name: "HEVC Sample Entry"},
-	TypehvcC: {Name: "HEVC Configuration Box"},
+	TypeHvcC: {Name: "HEVC Decoder Configuration Record"},
+	TypeLhvC: {Name: "L-HEVC Decoder Configuration Record"},
 	TypeAv01: {Name: "AV1 Sample Entry"},
 	TypeAv1C: {Name: "AV1 Configuration Box"},
 	TypeBtrt: {Name: "MPEG4 Bit Rate Box"},
 	TypeMp4a: {Name: "MP4 Visual Sample Entry"},
 	TypeEsds: {Name: "ES Descriptor Box"},
 	TypePasp: {Name: "Pixel Aspect Ratio Box"},
+	TypeVexu: {Name: "Video Extended Usage Box"},
+	TypeColr: {Name: "Colour Information Box"},
+	TypeHfov: {Name: "hfov Box"},
+	TypeSgpd: {Name: "Sample Group Description Box"},
 }
 
 // BoxTypes returns box types map.

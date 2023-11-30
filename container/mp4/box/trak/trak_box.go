@@ -8,6 +8,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/container/mp4/box/edts"
 	"github.com/wangyoucao577/medialib/container/mp4/box/mdia"
+	"github.com/wangyoucao577/medialib/container/mp4/box/meta"
 	"github.com/wangyoucao577/medialib/container/mp4/box/tkhd"
 	"github.com/wangyoucao577/medialib/container/mp4/box/uuid"
 )
@@ -20,6 +21,7 @@ type Box struct {
 	Mdia *mdia.Box  `json:"mdia,omitempty"`
 	Uuid *uuid.Box  `json:"uuid,omitempty"`
 	Edts []edts.Box `json:"edts,omitempty"`
+	Meta []meta.Box `json:"meta,omitempty"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -36,6 +38,7 @@ func New(h box.Header) box.Box {
 			box.TypeMdia: mdia.New,
 			box.TypeUUID: uuid.New,
 			box.TypeEdts: edts.New,
+			box.TypeMeta: meta.New,
 		},
 	}
 }
@@ -62,7 +65,10 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		b.Uuid = createdBox.(*uuid.Box)
 	case box.TypeEdts:
 		b.Edts = append(b.Edts, *createdBox.(*edts.Box))
-		createdBox = &b.Edts[len(b.Edts)-1] // reference to the last empty free box
+		createdBox = &b.Edts[len(b.Edts)-1] // reference to the last empty box
+	case box.TypeMeta:
+		b.Meta = append(b.Meta, *createdBox.(*meta.Box))
+		createdBox = &b.Meta[len(b.Meta)-1] // reference to the last empty box
 	}
 
 	return createdBox, nil

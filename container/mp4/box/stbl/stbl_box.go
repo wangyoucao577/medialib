@@ -8,6 +8,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/container/mp4/box/ctts"
 	"github.com/wangyoucao577/medialib/container/mp4/box/hdlr"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/sgpd"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sdtp"
 	"github.com/wangyoucao577/medialib/container/mp4/box/stco"
 	"github.com/wangyoucao577/medialib/container/mp4/box/stsc"
@@ -21,14 +22,15 @@ import (
 type Box struct {
 	box.Header `json:"header"`
 
-	Stsd *stsd.Box `json:"stsd,omitempty"`
-	Stts *stts.Box `json:"stts,omitempty"`
-	Stss *stss.Box `json:"stss,omitempty"`
-	Stsc *stsc.Box `json:"stsc,omitempty"`
-	Stsz *stsz.Box `json:"stsz,omitempty"`
-	Stco *stco.Box `json:"stco,omitempty"`
-	Ctts *ctts.Box `json:"ctts,omitempty"`
-	Sdtp *sdtp.Box `json:"sdtp,omitempty"`
+	Stsd *stsd.Box  `json:"stsd,omitempty"`
+	Stts *stts.Box  `json:"stts,omitempty"`
+	Stss *stss.Box  `json:"stss,omitempty"`
+	Stsc *stsc.Box  `json:"stsc,omitempty"`
+	Stsz *stsz.Box  `json:"stsz,omitempty"`
+	Stco *stco.Box  `json:"stco,omitempty"`
+	Ctts *ctts.Box  `json:"ctts,omitempty"`
+	Sdtp *sdtp.Box  `json:"sdtp,omitempty"`
+	Sgpd []sgpd.Box `json:"sgpd,omitempty"`
 
 	// passed from parent for later use
 	hdlr *hdlr.Box `json:"-"`
@@ -55,6 +57,7 @@ func New(h box.Header) box.Box {
 			box.TypeStco: stco.New,
 			box.TypeCtts: ctts.New,
 			box.TypeSdtp: sdtp.New,
+			box.TypeSgpd: sgpd.New,
 		},
 	}
 }
@@ -92,6 +95,9 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		b.Ctts = createdBox.(*ctts.Box)
 	case box.TypeSdtp:
 		b.Sdtp = createdBox.(*sdtp.Box)
+	case box.TypeSgpd:
+		b.Sgpd = append(b.Sgpd, *createdBox.(*sgpd.Box))
+		createdBox = &b.Sgpd[len(b.Sgpd)-1] // reference to the last empty box
 	}
 
 	return createdBox, nil

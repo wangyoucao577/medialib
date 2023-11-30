@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/container/mp4/box"
+	"github.com/wangyoucao577/medialib/container/mp4/box/meta"
 	"github.com/wangyoucao577/medialib/container/mp4/box/mvex"
 	"github.com/wangyoucao577/medialib/container/mp4/box/mvhd"
 	"github.com/wangyoucao577/medialib/container/mp4/box/trak"
@@ -21,6 +22,7 @@ type Box struct {
 	Udta *udta.Box  `json:"udta,omitempty"`
 	Trak []trak.Box `json:"trak,omitempty"`
 	Mvex *mvex.Box  `json:"mvex,omitempty"`
+	Meta []meta.Box `json:"meta,omitempty"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -35,6 +37,7 @@ func New(h box.Header) box.Box {
 			box.TypeUdta: udta.New,
 			box.TypeTrak: trak.New,
 			box.TypeMvex: mvex.New,
+			box.TypeMeta: meta.New,
 		},
 	}
 }
@@ -59,9 +62,12 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		b.Udta = createdBox.(*udta.Box)
 	case box.TypeTrak:
 		b.Trak = append(b.Trak, *createdBox.(*trak.Box))
-		createdBox = &b.Trak[len(b.Trak)-1] // reference to the last empty free box
+		createdBox = &b.Trak[len(b.Trak)-1] // reference to the last empty box
 	case box.TypeMvex:
 		b.Mvex = createdBox.(*mvex.Box)
+	case box.TypeMeta:
+		b.Meta = append(b.Meta, *createdBox.(*meta.Box))
+		createdBox = &b.Meta[len(b.Meta)-1] // reference to the last empty box
 	}
 
 	return createdBox, nil

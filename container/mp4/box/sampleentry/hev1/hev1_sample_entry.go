@@ -8,7 +8,10 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/btrt"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/colr"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/hfov"
 	hvcc "github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/hvcC"
+	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/vexu"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sampleentry/vide"
 )
 
@@ -16,8 +19,14 @@ import (
 type HEVCSampleEntry struct {
 	vide.VisualSampleEntry
 
-	HEVCConfig *hvcc.HEVCConfigrationBox `json:"hvcC"`
-	Btrt       *btrt.Box                 `json:"btrt,omitempty"`
+	HvccConfig *hvcc.HEVCConfigrationBox `json:"hvcC"`
+
+	LhvcConfig *hvcc.HEVCConfigrationBox `json:"lhvC,omitempty"`
+	Colr       *colr.Box                 `json:"colr,omitempty"`
+	Hfov       *hfov.Box                 `json:"hfov,omitempty"`
+	Vexu       *vexu.Box                 `json:"vexu,omitempty"`
+
+	Btrt *btrt.Box `json:"btrt,omitempty"`
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -32,7 +41,11 @@ func New(h box.Header) box.Box {
 		},
 
 		boxesCreator: map[string]box.NewFunc{
-			box.TypehvcC: hvcc.New,
+			box.TypeHvcC: hvcc.New,
+			box.TypeLhvC: hvcc.New,
+			box.TypeColr: colr.New,
+			box.TypeHfov: hfov.New,
+			box.TypeVexu: vexu.New,
 			box.TypeBtrt: btrt.New,
 		},
 	}
@@ -52,8 +65,16 @@ func (a *HEVCSampleEntry) CreateSubBox(h box.Header) (box.Box, error) {
 	}
 
 	switch h.Type.String() {
-	case box.TypehvcC:
-		a.HEVCConfig = createdBox.(*hvcc.HEVCConfigrationBox)
+	case box.TypeHvcC:
+		a.HvccConfig = createdBox.(*hvcc.HEVCConfigrationBox)
+	case box.TypeLhvC:
+		a.LhvcConfig = createdBox.(*hvcc.HEVCConfigrationBox)
+	case box.TypeColr:
+		a.Colr = createdBox.(*colr.Box)
+	case box.TypeHfov:
+		a.Hfov = createdBox.(*hfov.Box)
+	case box.TypeVexu:
+		a.Vexu = createdBox.(*vexu.Box)
 	case box.TypeBtrt:
 		a.Btrt = createdBox.(*btrt.Box)
 	}
