@@ -8,7 +8,8 @@ import (
 )
 
 // ParseBox tries to parse a box from a mount of data.
-// return ErrUnknownBoxType if doesn't know, otherwise fatal error.
+// return ErrUnknownBoxType if doesn't know, ErrInsufficientSize if no enough data,
+// otherwise fatal error.
 func ParseBox(r io.Reader, pb ParentBox, bytesAvailable uint64) (uint64, error) {
 	boxHeader := Header{}
 	if err := boxHeader.Parse(r, bytesAvailable); err != nil {
@@ -19,8 +20,10 @@ func ParseBox(r io.Reader, pb ParentBox, bytesAvailable uint64) (uint64, error) 
 			bytesToIgnore := bytesAvailable - boxHeader.HeaderSize()
 			glog.Warningf("%v when parse header, ignore %s size %d", err, boxHeader.Type, bytesToIgnore)
 
-			if err := util.ReadOrError(r, make([]byte, bytesToIgnore)); err != nil {
-				return bytesAvailable, err
+			if bytesToIgnore > 0 {
+				if err := util.ReadOrError(r, make([]byte, bytesToIgnore)); err != nil {
+					return bytesAvailable, err
+				}
 			}
 			return bytesAvailable, err
 		}
@@ -38,8 +41,10 @@ func ParseBox(r io.Reader, pb ParentBox, bytesAvailable uint64) (uint64, error) 
 			}
 			glog.Warningf("ignore %v when create sub box, type %s payload size %d (available %d)", err, boxHeader.Type, boxHeader.PayloadSize(), bytesAvailable)
 
-			if err := util.ReadOrError(r, make([]byte, bytesToIgnore)); err != nil {
-				return boxHeader.HeaderSize() + bytesToIgnore, err
+			if bytesToIgnore > 0 {
+				if err := util.ReadOrError(r, make([]byte, bytesToIgnore)); err != nil {
+					return boxHeader.HeaderSize() + bytesToIgnore, err
+				}
 			}
 			return boxHeader.HeaderSize() + bytesToIgnore, err
 		}
