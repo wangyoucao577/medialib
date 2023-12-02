@@ -20,6 +20,7 @@ const (
 	TypeFtyp   = "ftyp"
 	TypeFree   = "free"
 	TypeSkip   = "skip"
+	TypeWide   = "wide"
 	TypeMdat   = "mdat"
 	TypeMoov   = "moov"
 	TypeMvhd   = "mvhd"
@@ -91,6 +92,7 @@ var boxTypes = map[string]BasicInfo{
 	TypeFtyp:   {Name: "File Type Box"},
 	TypeFree:   {Name: "Free Space Box"},
 	TypeSkip:   {Name: "Free Space Box"},
+	TypeWide:   {Name: "Wide box"},
 	TypeMdat:   {Name: "Media Data Box"},
 	TypeMoov:   {Name: "Movie Box"},
 	TypeMvhd:   {Name: "Movie Header Box"},

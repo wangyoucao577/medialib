@@ -16,6 +16,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/mp4/box/moof"
 	"github.com/wangyoucao577/medialib/container/mp4/box/moov"
 	"github.com/wangyoucao577/medialib/container/mp4/box/sidx"
+	"github.com/wangyoucao577/medialib/container/mp4/box/wide"
 	"github.com/wangyoucao577/medialib/util"
 	"github.com/wangyoucao577/medialib/video/avc/annexbes"
 	"github.com/wangyoucao577/medialib/video/avc/es"
@@ -31,6 +32,7 @@ type MoofMdat struct {
 type Boxes struct {
 	Ftyp     *ftyp.Box  `json:"ftyp,omitempty"`
 	Free     []free.Box `json:"free,omitempty"`
+	Wide     *wide.Box  `json:"wide,omitempty"`
 	Moov     *moov.Box  `json:"moov,omitempty"`
 	MoofMdat []MoofMdat `json:"moof_mdat,omitempty"` // for fmp4, make sure moof,mdat can be pared and stored interleavely
 	Mdat     []mdat.Box `json:"mdat,omitempty"`      // for  mp4 that doesn't have moof
@@ -48,6 +50,7 @@ func newBoxes() Boxes {
 			box.TypeFtyp: ftyp.New,
 			box.TypeFree: free.New,
 			box.TypeSkip: free.New,
+			box.TypeWide: wide.New,
 			box.TypeMdat: mdat.New,
 			box.TypeMoov: moov.New,
 			box.TypeMoof: moof.New,
@@ -101,6 +104,8 @@ func (b *Boxes) CreateSubBox(h box.Header) (box.Box, error) {
 	case box.TypeFree, box.TypeSkip:
 		b.Free = append(b.Free, *createdBox.(*free.Box))
 		createdBox = &b.Free[len(b.Free)-1] // reference to the last empty free box
+	case box.TypeWide:
+		b.Wide = createdBox.(*wide.Box)
 	case box.TypeMdat:
 		if len(b.MoofMdat) > 0 {
 			if err := b.MoofMdat[len(b.MoofMdat)-1].Mdat.Validate(); err == nil { // expect error
