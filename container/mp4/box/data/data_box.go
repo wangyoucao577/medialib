@@ -6,7 +6,6 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/container/mp4/box"
 	"github.com/wangyoucao577/medialib/util"
 )
@@ -29,10 +28,6 @@ func New(h box.Header) box.Box {
 
 // ParsePayload parse payload which requires basic box already exist.
 func (b *Box) ParsePayload(r io.Reader) error {
-	if err := b.Validate(); err != nil {
-		glog.Warningf("box %s invalid, err %v", b.Header.Type, err)
-		return nil
-	}
 
 	// start to parse payload
 	var parsedBytes uint64

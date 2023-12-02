@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/wangyoucao577/medialib/container/mp4/box"
+	"github.com/wangyoucao577/medialib/container/mp4/box/data"
 	"github.com/wangyoucao577/medialib/container/mp4/box/desc"
 	"github.com/wangyoucao577/medialib/container/mp4/box/dottoo"
 )
@@ -17,6 +18,7 @@ type Box struct {
 
 	EncodingTool *dottoo.Box `json:"encoding_tool,omitempty"`
 	Desc         *desc.Box   `json:"desc,omitempty"`
+	Data         []data.Box  `json:"unknown_type_data,omitempty"` // unspecified types
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -37,8 +39,9 @@ func New(h box.Header) box.Box {
 func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 	creator, ok := b.boxesCreator[h.Type.String()]
 	if !ok {
-		glog.V(2).Infof("unknown box type %s, size %d payload %d", h.Type.String(), h.Size, h.PayloadSize())
-		return nil, box.ErrUnknownBoxType
+		// glog.V(2).Infof("unknown box type %s, size %d payload %d", h.Type.String(), h.Size, h.PayloadSize())
+		// return nil, box.ErrUnknownBoxType
+		creator = data.New // use general data box for all unknown sub box of ilst
 	}
 
 	createdBox := creator(h)
@@ -51,6 +54,9 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		b.EncodingTool = createdBox.(*dottoo.Box)
 	case box.TypeDesc:
 		b.Desc = createdBox.(*desc.Box)
+	default:
+		b.Data = append(b.Data, *createdBox.(*data.Box))
+		createdBox = &b.Data[len(b.Data)-1]
 	}
 
 	return createdBox, nil
