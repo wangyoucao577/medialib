@@ -124,17 +124,17 @@ func (b *Box) ParsePayload(r io.Reader) error {
 	}
 
 	for i := 0; i < int(b.EntryCount); i++ {
-		boxHeader, err := box.ParseBox(r, b)
+		readBytes, err := box.ParseBox(r, b, b.PayloadSize()-parsedBytes)
 		if err != nil {
 			if err == io.EOF {
 				return err
-			} else if err == box.ErrUnknownBoxType {
+			} else if err == box.ErrUnknownBoxType || err == box.ErrInsufficientSize {
 				// after ignore the box, continue to parse next
 			} else {
 				return err
 			}
 		}
-		parsedBytes += boxHeader.BoxSize()
+		parsedBytes += readBytes
 	}
 
 	if parsedBytes != b.PayloadSize() {

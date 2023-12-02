@@ -7,8 +7,9 @@ import (
 
 // errors
 var (
-	ErrNotImplemented = errors.New("not implemented")
-	ErrUnknownBoxType = errors.New("unkown box type")
+	ErrNotImplemented   = errors.New("not implemented")
+	ErrUnknownBoxType   = errors.New("unkown box type")
+	ErrInsufficientSize = errors.New("insufficient size")
 )
 
 // NewFunc defines generic new function to create box.

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 
 	"github.com/ghodss/yaml"
 	"github.com/golang/glog"
@@ -131,8 +132,8 @@ func (b *Boxes) CreateSubBox(h box.Header) (box.Box, error) {
 func (b *Boxes) ParsePayload(r io.Reader) error {
 
 	for {
-		if _, err := box.ParseBox(r, b); err != nil {
-			if err == io.EOF {
+		if _, err := box.ParseBox(r, b, math.MaxUint64); err != nil {
+			if err == io.EOF || err == box.ErrInsufficientSize {
 				break
 			} else if err == box.ErrUnknownBoxType {
 				continue

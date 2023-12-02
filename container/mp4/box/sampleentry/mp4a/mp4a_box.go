@@ -75,21 +75,22 @@ func (m *MP4VisualSampleEntry) ParsePayload(r io.Reader) error {
 
 	var parsedBytes uint64
 	for {
-		boxHeader, err := box.ParseBox(r, m)
+		readBytes, err := box.ParseBox(r, m, m.PayloadSize()-parsedBytes)
 		if err != nil {
 			if err == io.EOF {
 				return err
-			} else if err == box.ErrUnknownBoxType {
+			} else if err == box.ErrUnknownBoxType || err == box.ErrInsufficientSize {
 				// after ignore the box, continue to parse next
 			} else {
 				return err
 			}
 		}
-		parsedBytes += boxHeader.BoxSize()
+		parsedBytes += readBytes
 
 		if parsedBytes == m.PayloadSize() {
 			break
 		}
 	}
+
 	return nil
 }

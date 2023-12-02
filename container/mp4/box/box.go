@@ -82,49 +82,58 @@ func (h Header) HeaderSize() uint64 {
 }
 
 // Parse parses basic box contents.
-func (h *Header) Parse(r io.Reader) error {
-	var parsedBytes uint32
-
-	data := make([]byte, 4)
+func (h *Header) Parse(r io.Reader, bytesAvailable uint64) error {
+	if bytesAvailable < 8 { // at least 8 bytes for size and type
+		return ErrInsufficientSize
+	}
 
 	// size
+	data := make([]byte, 4)
 	if err := util.ReadOrError(r, data); err != nil {
 		return err
 	} else {
 		h.Size = binary.BigEndian.Uint32(data)
-		parsedBytes += 4
+		h.headerSize += 4
 	}
 
 	// type
 	if err := util.ReadOrError(r, h.Type[:]); err != nil {
 		return err
+	} else {
+		h.headerSize += 4
 	}
-	parsedBytes += 4
 
 	// large size
 	if h.Size == 1 {
-		largeData := make([]byte, 8)
+		if h.headerSize+8 > bytesAvailable {
+			return ErrInsufficientSize
+		}
 
+		largeData := make([]byte, 8)
 		if err := util.ReadOrError(r, largeData); err != nil {
 			return err
 		} else {
 			h.LargeSize = binary.BigEndian.Uint64(largeData)
-			parsedBytes += 8
+			h.headerSize += 8
 		}
 	}
 
 	// user type
 	if string(h.Type[:]) == TypeUUID {
 		h.UserType = &uuid.UUID{}
+		if h.headerSize+uint64(len(h.UserType[:])) > bytesAvailable {
+			return ErrInsufficientSize
+		}
+
 		if err := util.ReadOrError(r, h.UserType[:]); err != nil {
 			return err
+		} else {
+			h.headerSize += uint64(len(h.UserType[:])) // 16 bytes
 		}
-		parsedBytes += 16
 	}
 
-	h.headerSize = uint64(parsedBytes)
 	if h.Size != 0 {
-		h.payloadSize = h.BoxSize() - uint64(parsedBytes)
+		h.payloadSize = h.BoxSize() - h.headerSize
 	}
 
 	return nil

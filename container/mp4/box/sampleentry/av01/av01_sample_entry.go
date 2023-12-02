@@ -80,21 +80,22 @@ func (a *AV1SampleEntry) ParsePayload(r io.Reader) error {
 
 	var parsedBytes uint64
 	for {
-		boxHeader, err := box.ParseBox(r, a)
+		readBytes, err := box.ParseBox(r, a, a.PayloadSize()-parsedBytes)
 		if err != nil {
 			if err == io.EOF {
 				return err
-			} else if err == box.ErrUnknownBoxType {
+			} else if err == box.ErrUnknownBoxType || err == box.ErrInsufficientSize {
 				// after ignore the box, continue to parse next
 			} else {
 				return err
 			}
 		}
-		parsedBytes += boxHeader.BoxSize()
+		parsedBytes += readBytes
 
 		if parsedBytes == a.PayloadSize() {
 			break
 		}
 	}
+
 	return nil
 }

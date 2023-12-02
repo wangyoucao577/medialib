@@ -1,7 +1,6 @@
 package box
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/golang/glog"
@@ -10,38 +9,47 @@ import (
 
 // ParseBox tries to parse a box from a mount of data.
 // return ErrUnknownBoxType if doesn't know, otherwise fatal error.
-func ParseBox(r io.Reader, pb ParentBox) (*Header, error) {
+func ParseBox(r io.Reader, pb ParentBox, bytesAvailable uint64) (uint64, error) {
 	boxHeader := Header{}
-	if err := boxHeader.Parse(r); err != nil {
+	if err := boxHeader.Parse(r, bytesAvailable); err != nil {
 		if err == io.EOF {
 			glog.V(1).Info("EOF")
-			return nil, err
+			return boxHeader.HeaderSize(), err
+		} else if err == ErrInsufficientSize { // ignore remain available bytes
+			bytesToIgnore := bytesAvailable - boxHeader.HeaderSize()
+			glog.Warningf("%v when parse header, ignore %s size %d", err, boxHeader.Type, bytesToIgnore)
+
+			if err := util.ReadOrError(r, make([]byte, bytesToIgnore)); err != nil {
+				return bytesAvailable, err
+			}
+			return bytesAvailable, err
 		}
 		// glog.Warningf("parse box header failed, err %v", err)
-		return nil, err
+		return boxHeader.HeaderSize(), err
 	}
+	bytesAvailable -= boxHeader.HeaderSize()
 
 	b, err := pb.CreateSubBox(boxHeader)
 	if err != nil {
-		//TODO: other types
-		glog.Warningf("ignore %v %s size %d", err, boxHeader.Type, boxHeader.PayloadSize())
+		if err == ErrUnknownBoxType {
+			bytesToIgnore := boxHeader.PayloadSize()
+			if bytesToIgnore > bytesAvailable {
+				bytesToIgnore = bytesAvailable
+			}
+			glog.Warningf("ignore %v when create sub box, type %s payload size %d (available %d)", err, boxHeader.Type, boxHeader.PayloadSize(), bytesAvailable)
 
-		if boxHeader.BoxSize() > (1 << 24) { // we set about 33MB to check invalid value
-			return &boxHeader, fmt.Errorf("box type %s invalid size %d", boxHeader.Type, boxHeader.BoxSize())
+			if err := util.ReadOrError(r, make([]byte, bytesToIgnore)); err != nil {
+				return boxHeader.HeaderSize() + bytesToIgnore, err
+			}
+			return boxHeader.HeaderSize() + bytesToIgnore, err
 		}
-
-		// read and ignore
-		//TODO: support seek
-		if err := util.ReadOrError(r, make([]byte, boxHeader.PayloadSize())); err != nil {
-			return &boxHeader, err
-		}
-		return &boxHeader, err
+		return boxHeader.HeaderSize(), err
 	}
 
 	if err := b.ParsePayload(r); err != nil {
 		glog.Warningf("parse box type %s payload failed, err %v", string(boxHeader.Type[:]), err)
-		return &boxHeader, err
+		return boxHeader.BoxSize(), err
 	}
 
-	return &boxHeader, nil
+	return boxHeader.BoxSize(), nil
 }
