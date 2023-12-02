@@ -12,7 +12,7 @@ import (
 
 // Box represents a meta box.
 type Box struct {
-	box.FullHeader `json:"full_header"`
+	box.Header `json:"header"`
 
 	Hdlr *hdlr.Box `json:"hdlr,omitempty"`
 	Ilst *ilst.Box `json:"ilst,omitempty"`
@@ -23,9 +23,7 @@ type Box struct {
 // New creates a new Box.
 func New(h box.Header) box.Box {
 	return &Box{
-		FullHeader: box.FullHeader{
-			Header: h,
-		},
+		Header: h,
 
 		boxesCreator: map[string]box.NewFunc{
 			box.TypeHdlr: hdlr.New,
@@ -61,11 +59,6 @@ func (b *Box) ParsePayload(r io.Reader) error {
 	if err := b.Validate(); err != nil {
 		glog.Warningf("box %s invalid, err %v", b.Type, err)
 		return nil
-	}
-
-	// parse full header additional information first
-	if err := b.FullHeader.ParseVersionFlag(r); err != nil {
-		return err
 	}
 
 	var parsedBytes uint64
