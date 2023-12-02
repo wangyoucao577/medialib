@@ -22,8 +22,8 @@ type Box struct {
 	Smhd *smhd.Box `json:"smhd,omitempty"`
 	Vmhd *vmhd.Box `json:"vmhd,omitempty"`
 
-	// passed from parent for later use
-	hdlr *hdlr.Box `json:"-"`
+	Hdlr       *hdlr.Box `json:"hdlr,omitempty"` // parsed on the fly
+	hdlrPassed *hdlr.Box `json:"-"`              // passed from parent for later use
 
 	boxesCreator map[string]box.NewFunc `json:"-"`
 }
@@ -38,13 +38,14 @@ func New(h box.Header) box.Box {
 			box.TypeDinf: dinf.New,
 			box.TypeSmhd: smhd.New,
 			box.TypeVmhd: vmhd.New,
+			box.TypeHdlr: hdlr.New,
 		},
 	}
 }
 
 // SetHdlr passes hdlr box for later use.
 func (b *Box) SetHdlr(h *hdlr.Box) {
-	b.hdlr = h
+	b.hdlrPassed = h
 }
 
 // CreateSubBox tries to create sub level box.
@@ -64,8 +65,10 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 	case box.TypeStbl:
 		b.Stbl = createdBox.(*stbl.Box)
 		// handler_type is required in stsd
-		if b.hdlr != nil {
-			b.Stbl.SetHdlr(b.hdlr)
+		if b.hdlrPassed != nil {
+			b.Stbl.SetHdlr(b.hdlrPassed)
+		} else if b.Hdlr != nil {
+			b.Stbl.SetHdlr(b.Hdlr)
 		}
 	case box.TypeDinf:
 		b.Dinf = createdBox.(*dinf.Box)
@@ -73,6 +76,8 @@ func (b *Box) CreateSubBox(h box.Header) (box.Box, error) {
 		b.Smhd = createdBox.(*smhd.Box)
 	case box.TypeVmhd:
 		b.Vmhd = createdBox.(*vmhd.Box)
+	case box.TypeHdlr:
+		b.Hdlr = createdBox.(*hdlr.Box)
 	}
 
 	return createdBox, nil
