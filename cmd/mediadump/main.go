@@ -10,6 +10,7 @@ import (
 	"github.com/wangyoucao577/medialib/container/flv"
 	"github.com/wangyoucao577/medialib/container/mp4"
 	"github.com/wangyoucao577/medialib/container/mp4/box"
+	"github.com/wangyoucao577/medialib/util/appversion"
 	"github.com/wangyoucao577/medialib/util/dump"
 	"github.com/wangyoucao577/medialib/util/exit"
 	"github.com/wangyoucao577/medialib/util/mediaformat"
@@ -21,6 +22,7 @@ import (
 func main() {
 	flag.Parse()
 	defer glog.Flush()
+	appversion.PrintExit()
 
 	// validate and get flags
 	if err := validateFlags(); err != nil {

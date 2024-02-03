@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/golang/glog"
+	"github.com/wangyoucao577/medialib/util/appversion"
 	"github.com/wangyoucao577/medialib/util/dump"
 	"github.com/wangyoucao577/medialib/util/exit"
 )
@@ -12,6 +13,7 @@ import (
 func main() {
 	flag.Parse()
 	defer glog.Flush()
+	appversion.PrintExit()
 
 	// validate and get flags
 	if err := validateFlags(); err != nil {
