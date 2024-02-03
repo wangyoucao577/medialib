@@ -1,0 +1,55 @@
+name: Release Go Binaries
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set APP_VERSION env
+        run: echo APP_VERSION=$(basename ${GITHUB_REF}) >> ${GITHUB_ENV}
+
+      # ./cmd/mediadump
+      - uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          project_path: ./cmd/mediadump
+          binary_name: mediadump
+          build_flags: -v -tags ${{ env.APP_VERSION }}
+          md5sum: false
+
+      # ./cmd/flv2avc
+      - uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          project_path: ./cmd/flv2avc
+          binary_name: flv2avc
+          build_flags: -v -tags ${{ env.APP_VERSION }}
+          md5sum: false
+
+      # ./cmd/mp42avc
+      - uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          project_path: ./cmd/mp42avc
+          binary_name: mp42avc
+          build_flags: -v -tags ${{ env.APP_VERSION }}
+          md5sum: false
