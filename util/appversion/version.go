@@ -24,11 +24,14 @@ func (v versionInfo) print(w io.Writer) {
 func Print() {
 	if buildInfo, ok := debug.ReadBuildInfo(); ok {
 		var v versionInfo
+		v.AppVersion = buildInfo.Main.Version // default to mod's version
 
 		for _, s := range buildInfo.Settings {
 			switch s.Key {
 			case "-tags":
-				v.AppVersion = s.Value
+				if v.AppVersion != "" { // update with -tags if doesn't exist
+					v.AppVersion = s.Value
+				}
 			case "vcs.revision":
 				v.GitRevision = s.Value
 			case "vcs.time":
