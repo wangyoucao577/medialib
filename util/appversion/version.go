@@ -2,6 +2,7 @@
 package appversion
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -10,14 +11,12 @@ import (
 
 type versionInfo struct {
 	AppVersion  string `json:"version"`
-	GitRevision string `json:"git_revision"`
+	GitRevision string `json:"commit"`
 	BuildTime   string `json:"build_time"`
 }
 
 func (v versionInfo) print(w io.Writer) {
-	fmt.Fprintf(w, "Version:      %s\n", v.AppVersion)
-	fmt.Fprintf(w, "Git Revision: %s\n", v.GitRevision)
-	fmt.Fprintf(w, "Build Time:   %s\n", v.BuildTime)
+	json.NewEncoder(w).Encode(v)
 }
 
 // Print prints version information to stdout.
