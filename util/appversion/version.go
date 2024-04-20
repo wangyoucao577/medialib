@@ -16,7 +16,7 @@ type versionInfo struct {
 }
 
 func (v versionInfo) print(w io.Writer) {
-	json.NewEncoder(w).Encode(v)
+	_ = json.NewEncoder(w).Encode(v)
 }
 
 // Print prints version information to stdout.
